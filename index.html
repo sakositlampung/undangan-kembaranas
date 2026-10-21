@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Undangan Digital & Sistem Laporan - Kembaranas III</title>
+  <!-- Bootstrap CSS & FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -11,16 +12,87 @@
       --primary-color: #5c1813;
       --secondary-color: #8c2820;
       --accent-color: #d4a359;
-      --bg-dark: #231b17;
+      --bg-cream: #f4f1ea;
     }
 
     body {
-      background-color: #f4f1ea;
+      background-color: var(--bg-cream);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #333;
     }
 
-    /* Styles Tampilan Undangan Tamu */
+    /* ==================== 1. HALAMAN COVER / SAMPUL AWAL ==================== */
+    .cover-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, #fdfbf7 0%, #eae3d2 100%);
+      position: relative;
+    }
+
+    .cover-card {
+      background: #ffffff;
+      padding: 35px 25px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(92, 24, 19, 0.15);
+      max-width: 480px;
+      width: 100%;
+      border: 2px solid #e2d7c3;
+    }
+
+    .logo-cover {
+      max-width: 170px;
+      height: auto;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 5px 8px rgba(0,0,0,0.15));
+    }
+
+    .cover-title {
+      color: var(--primary-color);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .cover-subtitle {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+
+    .guest-box-cover {
+      background: #faf7f0;
+      border: 1px dashed var(--accent-color);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+    }
+
+    .btn-buka {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: #fff;
+      border: none;
+      padding: 12px 35px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 30px;
+      box-shadow: 0 6px 18px rgba(140, 40, 32, 0.35);
+      transition: all 0.3s ease;
+    }
+
+    .btn-buka:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(140, 40, 32, 0.45);
+      color: #fff;
+    }
+
+    /* ==================== 2. TAMPILAN UNDANGAN UTAMA ==================== */
     .guest-container {
       max-width: 650px;
       margin: 20px auto;
@@ -28,6 +100,7 @@
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       overflow: hidden;
+      animation: fadeIn 0.8s ease-in-out;
     }
 
     .card-wrapper {
@@ -42,19 +115,34 @@
       display: block;
     }
 
-    /* Overlay Nama Tamu tepat di kotak putih gambar template */
+    /* OVERLAY NAMA & JABATAN DI DALAM KOTAK PUTIH */
     .nama-overlay {
       position: absolute;
-      top: 36.8%;
-      left: 73.5%;
+      top: 38.8%;        /* Posisi diturunkan agar presisi di tengah kotak putih */
+      left: 73.5%;       /* Posisi horizontal center */
       transform: translate(-50%, -50%);
       width: 44%;
       text-align: center;
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: #1a1a1a;
-      line-height: 1.3;
       word-wrap: break-word;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay-nama {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #1a1a1a;
+      line-height: 1.25;
+    }
+
+    .overlay-jabatan {
+      font-weight: 600;
+      font-size: 0.78rem;  /* Ukuran font lebih kecil untuk jabatan */
+      color: #555555;
+      margin-top: 3px;
+      line-height: 1.2;
     }
 
     .rsvp-section {
@@ -71,7 +159,7 @@
       padding: 10px 20px;
     }
 
-    /* Styles Dashboard Admin */
+    /* ==================== 3. DASHBOARD ADMIN ==================== */
     .admin-header {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: #fff;
@@ -83,11 +171,6 @@
       border: none;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-3px);
     }
 
     .badge-status {
@@ -112,29 +195,56 @@
       padding: 12px 24px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- TOMBOL SAKLAR ADMIN / TAMU -->
+  <!-- TOMBOL NAVIGASI SAKLAR (ADMIN / USER) -->
   <button id="toggleViewBtn" class="btn btn-dark nav-toggle-btn" onclick="toggleView()">
-    <i class="fa-solid fa-gauge-high me-2"></i> Ke Dashboard Admin
+    <i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin
   </button>
 
-  <!-- ==================== TAMPILAN TAMU UNDANGAN ==================== -->
-  <div id="guestView" class="container py-3">
+  <!-- ==================== 1. HALAMAN SAMPUL / COVER ==================== -->
+  <div id="coverView" class="cover-container">
+    <div class="cover-card">
+      <!-- Logo Kembaranas III -->
+      <img src="2.jpg" alt="Logo Kembaranas III" class="logo-cover" onerror="this.src='https://drive.google.com/thumbnail?id=1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh&sz=w500'">
+      
+      <div class="cover-title">PEMBUKAAN KEMBARANAS III</div>
+      <div class="cover-subtitle">DAN PPIM PENEGAK TINGKAT NASIONAL</div>
+
+      <div class="guest-box-cover">
+        <small class="text-muted d-block mb-1">Kepada Yth. Bapak/Ibu/Kakak:</small>
+        <div class="fw-bold text-dark fs-5" id="coverNamaTamu">Kakak / Bapak / Ibu</div>
+        <small class="text-secondary d-block mt-1" id="coverJabatanTamu">-</small>
+      </div>
+
+      <button class="btn btn-buka" onclick="bukaUndangan()">
+        <i class="fa-solid fa-envelope-open me-2"></i> BUKA UNDANGAN
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== 2. TAMPILAN UNDANGAN UTAMA ==================== -->
+  <div id="guestView" class="container py-3 d-none">
     <div class="guest-container">
       <div class="card-wrapper">
-        <!-- Menggunakan gambar template dari repository GitHub -->
-        <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img" onerror="handleImageError(this)">
+        <!-- Template Gambar Undangan -->
+        <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img">
         
-        <!-- Overlay Nama Tamu di dalam Kotak Putih -->
-        <div class="nama-overlay" id="displayNamaTamu">
-          Bapak / Ibu / Kakak
+        <!-- Overlay Nama & Jabatan di Dalam Kotak Putih -->
+        <div class="nama-overlay">
+          <div class="overlay-nama" id="displayNamaTamu">Kak Feri Susanto, S.Kom</div>
+          <div class="overlay-jabatan" id="displayJabatanTamu">Panitia Kembaranas III</div>
         </div>
       </div>
 
-      <!-- Konfirmasi Kehadiran (RSVP) -->
+      <!-- Form RSVP -->
       <div class="rsvp-section">
         <h5 class="mb-3 text-secondary"><i class="fa-solid fa-clipboard-check me-2"></i>Konfirmasi Kehadiran</h5>
         <div id="rsvpButtons">
@@ -150,7 +260,7 @@
     </div>
   </div>
 
-  <!-- ==================== DASHBOARD ADMIN & LAPORAN ==================== -->
+  <!-- ==================== 3. DASHBOARD ADMIN & LAPORAN ==================== -->
   <div id="adminView" class="d-none">
     <header class="admin-header mb-4">
       <div class="container">
@@ -168,7 +278,7 @@
     </header>
 
     <div class="container mb-5">
-      <!-- METER STATISTIK LAPORAN -->
+      <!-- METER STATISTIK -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
           <div class="card stat-card bg-white p-3 border-start border-primary border-4">
@@ -219,7 +329,7 @@
         </div>
       </div>
 
-      <!-- TABEL DAFTAR UNDANGAN & KONTROL -->
+      <!-- TABEL DAFTAR UNDANGAN -->
       <div class="table-responsive">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
           <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2"></i>Daftar Undangan & Status</h5>
@@ -241,15 +351,33 @@
             </tr>
           </thead>
           <tbody id="guestTableBody">
-            <!-- Data akan dimuat secara dinamis melalui JS -->
+            <!-- Data Dinamis -->
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
+  <!-- ==================== MODAL POP-UP NOTIFIKASI SUKSES ==================== -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg style-modal" style="border-radius: 18px;">
+        <div class="modal-body text-center p-4">
+          <div class="mb-3">
+            <i class="fa-solid fa-circle-check text-success display-2"></i>
+          </div>
+          <h4 class="fw-bold text-dark mb-2" id="modalTitle">Berhasil Disalin! ✨</h4>
+          <p class="text-secondary mb-4" id="modalMessage">Tautan undangan kustom telah siap. Mari sebarkan kabar gembira dan pererat tali silaturahmi!</p>
+          <button type="button" class="btn btn-success px-4 py-2 rounded-pill fw-bold" data-bs-dismiss="modal">Siap, Bagikan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts Bootstrap & Logic JS -->
+  <script href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // DATA DEFAULT SAMPLE TAMU
+    // DATA SAMPLE TAMU DEFAULT
     const defaultGuests = [
       { id: 1, nama: "Kak Feri Susanto, S.Kom", jabatan: "Panitia Kembaranas III", wa: "6281234567890", terkirim: true, rsvp: "Hadir" },
       { id: 2, nama: "Bapak Ka. Kwarda Lampung", jabatan: "Kwarda Lampung", wa: "6281987654321", terkirim: false, rsvp: "Belum Respon" },
@@ -263,29 +391,22 @@
       renderDashboard();
     }
 
-    // MEMBACA URL PARAMETER ?to=Nama
+    // INISIALISASI HALAMAN BERDASARKAN URL PARAMETER
     function initView() {
       const urlParams = new URLSearchParams(window.location.search);
       const guestName = urlParams.get('to');
-      const mode = urlParams.get('mode');
+      const guestJabatan = urlParams.get('j') || "";
 
       if (guestName) {
+        // Tampilkan Sampul / Cover Awal terlebih dahulu
+        document.getElementById('coverNamaTamu').innerText = guestName;
+        document.getElementById('coverJabatanTamu').innerText = guestJabatan || "Tamu Undangan";
+        
         document.getElementById('displayNamaTamu').innerText = guestName;
-        document.getElementById('guestView').classList.remove('d-none');
-        document.getElementById('adminView').classList.add('d-none');
-        document.getElementById('toggleViewBtn').innerHTML = `<i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin`;
-      } else if (mode === 'admin' || !guestName) {
-        showAdminView();
-      }
-    }
+        document.getElementById('displayJabatanTamu').innerText = guestJabatan;
 
-    function toggleView() {
-      const guestView = document.getElementById('guestView');
-      if (guestView.classList.contains('d-none')) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('to') || "Bapak / Ibu / Kakak";
-        document.getElementById('displayNamaTamu').innerText = name;
-        guestView.classList.remove('d-none');
+        document.getElementById('coverView').classList.remove('d-none');
+        document.getElementById('guestView').classList.add('d-none');
         document.getElementById('adminView').classList.add('d-none');
         document.getElementById('toggleViewBtn').innerHTML = `<i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin`;
       } else {
@@ -293,14 +414,29 @@
       }
     }
 
+    function bukaUndangan() {
+      document.getElementById('coverView').classList.add('d-none');
+      document.getElementById('guestView').classList.remove('d-none');
+    }
+
+    function toggleView() {
+      const adminView = document.getElementById('adminView');
+      if (adminView.classList.contains('d-none')) {
+        showAdminView();
+      } else {
+        initView();
+      }
+    }
+
     function showAdminView() {
+      document.getElementById('coverView').classList.add('d-none');
       document.getElementById('guestView').classList.add('d-none');
       document.getElementById('adminView').classList.remove('d-none');
       document.getElementById('toggleViewBtn').innerHTML = `<i class="fa-solid fa-envelope me-2"></i> Lihat Undangan`;
       renderDashboard();
     }
 
-    // RENDER DASHBOARD & METER LAPORAN
+    // RENDER TABLE ADMIN & STATISTIK LAPORAN
     function renderDashboard() {
       const tbody = document.getElementById('guestTableBody');
       tbody.innerHTML = '';
@@ -318,7 +454,7 @@
       const baseUrl = window.location.origin + window.location.pathname;
 
       guests.forEach((g, index) => {
-        const inviteLink = `${baseUrl}?to=${encodeURIComponent(g.nama)}`;
+        const inviteLink = `${baseUrl}?to=${encodeURIComponent(g.nama)}${g.jabatan ? '&j=' + encodeURIComponent(g.jabatan) : ''}`;
         const waText = `Assalamu'alaikum Wr. Wb. Kak/Bpk/Ibu *${g.nama}*,\n\nKami mengundang Anda untuk hadir pada acara *PEMBUKAAN KEMBARANAS III DAN PPIM PENEGAK TINGKAT NASIONAL* SAKO PRAMUKA SIT.\n\nDetail Undangan Digital Anda dapat diakses melalui tautan berikut:\n${inviteLink}\n\nTerima kasih.`;
         const waLink = `https://api.whatsapp.com/send?phone=${g.wa}&text=${encodeURIComponent(waText)}`;
 
@@ -341,12 +477,19 @@
             </span>
           </td>
           <td class="text-center">
-            <a href="${waLink}" target="_blank" onclick="markAsSent(${g.id})" class="btn btn-sm btn-success me-1" title="Kirim via WhatsApp">
-              <i class="fa-brands fa-whatsapp me-1"></i> Kirim WA
+            <!-- 1. Icon Preview -->
+            <a href="${inviteLink}" target="_blank" class="btn btn-sm btn-outline-info me-1" title="Preview Undangan">
+              <i class="fa-solid fa-eye"></i>
             </a>
+            <!-- 2. Icon Kirim WA Only -->
+            <a href="${waLink}" target="_blank" onclick="markAsSent(${g.id})" class="btn btn-sm btn-success me-1" title="Kirim WA">
+              <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            <!-- 3. Icon Copy Link -->
             <button onclick="copyLink('${inviteLink}')" class="btn btn-sm btn-outline-primary me-1" title="Salin Link">
               <i class="fa-solid fa-link"></i>
             </button>
+            <!-- 4. Hapus -->
             <button onclick="deleteGuest(${g.id})" class="btn btn-sm btn-outline-danger" title="Hapus">
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -393,12 +536,15 @@
       }
     }
 
+    // POP-UP NOTIFIKASI MODAL SPREAD POSITIVE WORDS
     function copyLink(link) {
       navigator.clipboard.writeText(link);
-      alert("Link undangan berhasil disalin!\n" + link);
+      showCustomModal(
+        "Tautan Berhasil Disalin! ✨",
+        "Tautan undangan kustom telah siap. Mari sebarkan kabar gembira dan pererat tali silaturahmi!"
+      );
     }
 
-    // BUAT LAPORAN WA UNTUK GRUP ORGANISASI
     function copyWALaporan() {
       const total = guests.length;
       const terkirim = guests.filter(g => g.terkirim).length;
@@ -419,7 +565,17 @@
         `_Laporan ini diperbarui secara otomatis dari sistem digital Kembaranas III._`;
 
       navigator.clipboard.writeText(reportText);
-      alert("Laporan format WhatsApp berhasil disalin! Silakan tempel di grup pengurus/pimpinan organisasi.");
+      showCustomModal(
+        "Laporan Berhasil Disalin! 📋",
+        "Format laporan untuk grup WhatsApp pengurus/pimpinan organisasi siap ditempel (paste)."
+      );
+    }
+
+    function showCustomModal(title, msg) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerText = msg;
+      const modal = new bootstrap.Modal(document.getElementById('successModal'));
+      modal.show();
     }
 
     function submitRSVP(status) {
@@ -467,15 +623,11 @@
 
     function filterGuests() {
       const q = document.getElementById('searchBox').value.toLowerCase();
-      const rows = document.querySelectorAll('#guestTableBody tr');
+      const rows = document.querySelectorAll('#guestTableBodytr');
       rows.forEach(row => {
         const text = row.innerText.toLowerCase();
         row.style.display = text.includes(q) ? '' : 'none';
       });
-    }
-
-    function handleImageError(img) {
-      console.warn("Gambar Undangan.png belum ditemukan di folder root repository.");
     }
 
     function escapeHtml(text) {
