@@ -50,7 +50,46 @@
       overflow-x: hidden;
     }
 
-    /* TOMBOL HAMBURGER HANYA DILAYOUT DI DASHBOARD ADMIN */
+    /* 1. SIDEBAR NAVIGASI INDEPENDEN (PURE CSS / VANILLA JS) */
+    .custom-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: #2b211b;
+      color: #fff;
+      border-right: 2px solid var(--accent-color);
+      z-index: 1060;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+      box-shadow: 4px 0 25px rgba(0,0,0,0.5);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .custom-sidebar.active {
+      transform: translateX(0) !important;
+    }
+
+    .custom-sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1055;
+      display: none;
+      backdrop-filter: blur(2px);
+    }
+
+    .custom-sidebar-overlay.active {
+      display: block !important;
+    }
+
+    /* 2. TOMBOL HAMBURGER */
     .hamburger-float-btn {
       position: fixed;
       top: 15px;
@@ -78,14 +117,6 @@
 
     .hamburger-icon-wrapper {
       font-size: 1.3rem;
-    }
-
-    /* OFFCANVAS SIDEBAR NAVIGASI KIRI */
-    .offcanvas-start {
-      width: var(--sidebar-width);
-      background: #2b211b;
-      color: #fff;
-      border-right: 2px solid var(--accent-color);
     }
 
     .sidebar-header {
@@ -133,7 +164,7 @@
       font-weight: 700;
     }
 
-    /* HALAMAN COVER UNDANGAN */
+    /* 3. HALAMAN COVER UNDANGAN */
     #coverView {
       min-height: 100vh;
       display: flex;
@@ -180,7 +211,7 @@
       background: linear-gradient(45deg, #f3e5ab, #d4a359);
     }
 
-    /* TAMPILAN KARTU UNDANGAN UTAMA */
+    /* 4. TAMPILAN KARTU UNDANGAN UTAMA */
     .guest-container {
       max-width: 650px;
       margin: 20px auto;
@@ -257,7 +288,7 @@
       transform: translateY(-2px);
     }
 
-    /* DASHBOARD ADMIN RESPONSIVE */
+    /* 5. DASHBOARD ADMIN RESPONSIVE */
     .admin-header {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: #fff;
@@ -324,7 +355,7 @@
         margin: 0;
         padding: 0;
       }
-      .rsvp-section, .hamburger-float-btn {
+      .rsvp-section, .hamburger-float-btn, .custom-sidebar, .custom-sidebar-overlay {
         display: none !important;
       }
     }
@@ -344,20 +375,23 @@
 </head>
 <body>
 
-  <!-- OFFCANVAS NAVIGASI SAMPING KIRI -->
-  <div class="offcanvas offcanvas-start" tabindex="-1" id="leftSidebarNav" aria-labelledby="leftSidebarNavLabel">
+  <!-- OVERLAY BACKGROUND GELAP UNTUK SIDEBAR -->
+  <div class="custom-sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+
+  <!-- SIDEBAR NAVIGASI KIRI -->
+  <div class="custom-sidebar" id="leftSidebarNav">
     <div class="sidebar-header d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center">
         <img src="logo.png" alt="Logo Sako SIT" class="sidebar-logo" onerror="handleLogoError(this)">
         <div>
-          <h6 class="fw-bold mb-0 text-warning" id="leftSidebarNavLabel">Kembaranas III</h6>
+          <h6 class="fw-bold mb-0 text-warning">Kembaranas III</h6>
           <small class="text-white-50" style="font-size: 0.75rem;">Sako Pramuka SIT</small>
         </div>
       </div>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      <button type="button" class="btn-close btn-close-white" onclick="toggleSidebar(false)" aria-label="Close"></button>
     </div>
 
-    <div class="offcanvas-body p-0">
+    <div class="p-0 flex-grow-1">
       <!-- NAVIGASI UTAMA HALAMAN -->
       <div class="sidebar-section-title">Navigasi Utama</div>
       <a class="sidebar-nav-item active" id="menuItemAdmin" onclick="switchViewFromSidebar('admin')">
@@ -384,13 +418,13 @@
 
       <!-- EKSPOR & AKSI CEPAT -->
       <div class="sidebar-section-title">Aksi & Ekspor Data</div>
-      <a class="sidebar-nav-item" onclick="exportExcel(); closeSidebar();">
+      <a class="sidebar-nav-item" onclick="exportExcel(); toggleSidebar(false);">
         <i class="fa-solid fa-file-excel text-success"></i> Ekspor Excel (.xlsx)
       </a>
-      <a class="sidebar-nav-item" onclick="exportCSV(); closeSidebar();">
+      <a class="sidebar-nav-item" onclick="exportCSV(); toggleSidebar(false);">
         <i class="fa-solid fa-file-csv text-info"></i> Ekspor CSV
       </a>
-      <a class="sidebar-nav-item" onclick="copyWALaporan(); closeSidebar();">
+      <a class="sidebar-nav-item" onclick="copyWALaporan(); toggleSidebar(false);">
         <i class="fa-solid fa-copy text-light"></i> Salin Laporan WA
       </a>
     </div>
@@ -454,7 +488,7 @@
   <!-- ==================== 3. DASHBOARD ADMIN ==================== -->
   <div id="adminView" class="d-none">
     <!-- TOMBOL MENU HAMBURGER -->
-    <button id="sidebarToggleBtn" class="hamburger-float-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#leftSidebarNav" aria-controls="leftSidebarNav" title="Buka Menu Navigasi">
+    <button id="sidebarToggleBtn" class="hamburger-float-btn" type="button" onclick="toggleSidebar()" title="Buka Menu Navigasi">
       <div class="hamburger-icon-wrapper">
         <i id="hamburgerIcon" class="fa-solid fa-bars"></i>
       </div>
@@ -634,21 +668,32 @@
       renderDashboard();
     }
 
-    function initView() {
-      setupFavicon();
-
+    /* FUNGSI KONTROL SIDEBAR MANDIRI (100% VANILLA JS & CSS ANIMATION) */
+    function toggleSidebar(forceState) {
       const sidebarEl = document.getElementById('leftSidebarNav');
+      const overlayEl = document.getElementById('sidebarOverlay');
       const iconEl = document.getElementById('hamburgerIcon');
 
-      if (sidebarEl) {
-        sidebarEl.addEventListener('show.bs.offcanvas', function () {
-          if (iconEl) iconEl.className = 'fa-solid fa-xmark';
-        });
-
-        sidebarEl.addEventListener('hide.bs.offcanvas', function () {
-          if (iconEl) iconEl.className = 'fa-solid fa-bars';
-        });
+      let shouldOpen;
+      if (typeof forceState === 'boolean') {
+        shouldOpen = forceState;
+      } else {
+        shouldOpen = !sidebarEl.classList.contains('active');
       }
+
+      if (shouldOpen) {
+        sidebarEl.classList.add('active');
+        overlayEl.classList.add('active');
+        if (iconEl) iconEl.className = 'fa-solid fa-xmark';
+      } else {
+        sidebarEl.classList.remove('active');
+        overlayEl.classList.remove('active');
+        if (iconEl) iconEl.className = 'fa-solid fa-bars';
+      }
+    }
+
+    function initView() {
+      setupFavicon();
 
       const urlParams = new URLSearchParams(window.location.search);
       const guestName = urlParams.get('to');
@@ -681,21 +726,7 @@
       } else {
         showGuestView();
       }
-      closeSidebar();
-    }
-
-    function closeSidebar() {
-      const sidebarEl = document.getElementById('leftSidebarNav');
-      if (sidebarEl) {
-        if (typeof bootstrap !== 'undefined' && bootstrap.Offcanvas) {
-          const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarEl);
-          if (bsOffcanvas) {
-            bsOffcanvas.hide();
-            return;
-          }
-        }
-        sidebarEl.classList.remove('show');
-      }
+      toggleSidebar(false);
     }
 
     function showAdminView() {
@@ -733,7 +764,7 @@
     function applyRsvpFilterFromSidebar(status) {
       showAdminView();
       setRsvpFilter(status);
-      closeSidebar();
+      toggleSidebar(false);
     }
 
     function renderDashboard() {
