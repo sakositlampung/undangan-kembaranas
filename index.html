@@ -220,6 +220,16 @@
       padding: 12px 24px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
+
+    .pagination .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: #fff;
+    }
+
+    .pagination .page-link {
+      color: var(--primary-color);
+    }
   </style>
 </head>
 <body>
@@ -271,7 +281,6 @@
           <button class="btn btn-outline-danger btn-rsvp me-2 mb-2" onclick="submitRSVP('Tidak Hadir')">
             <i class="fa-solid fa-circle-xmark me-1"></i> Halangan
           </button>
-          <!-- FITUR 1: UNDUH UNDANGAN DALAM BENTUK PDF -->
           <button class="btn btn-download-pdf mb-2" onclick="downloadPDF()">
             <i class="fa-solid fa-file-pdf me-2"></i> Unduh Undangan PDF
           </button>
@@ -296,7 +305,6 @@
           <div class="mt-2 mt-md-0 d-flex gap-2 flex-wrap">
             <button class="btn btn-light btn-sm" onclick="copyWALaporan()"><i class="fa-solid fa-copy me-1"></i> Salin Laporan WA</button>
             <button class="btn btn-outline-light btn-sm" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
-            <!-- FITUR 2: EXPORT EXCEL UNDANGAN & PESAN WA -->
             <button class="btn btn-warning btn-sm text-dark fw-bold" onclick="exportExcel()"><i class="fa-solid fa-file-excel me-1"></i> Export Excel (.xlsx)</button>
           </div>
         </div>
@@ -357,11 +365,10 @@
 
       <!-- TABEL DAFTAR UNDANGAN -->
       <div class="table-responsive">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2"></i>Daftar Undangan & Status</h5>
-          <div class="mt-2 mt-md-0 d-flex gap-2">
+          <div class="d-flex gap-2 align-items-center">
             <input type="text" id="searchBox" class="form-control form-control-sm" placeholder="Cari nama..." onkeyup="filterGuests()">
-            <button class="btn btn-outline-secondary btn-sm" onclick="resetToDemoData()"><i class="fa-solid fa-rotate-left me-1"></i> Reload Sample</button>
           </div>
         </div>
 
@@ -380,6 +387,22 @@
             <!-- Data dimasukkan via JS -->
           </tbody>
         </table>
+
+        <!-- NAVIGASI PAGINATION -->
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2 pt-2 border-top">
+          <div class="d-flex align-items-center gap-2">
+            <small class="text-muted" id="paginationInfo">Menampilkan 0 tamu</small>
+            <select id="rowsPerPageSelect" class="form-select form-select-sm" style="width: auto;" onchange="changeRowsPerPage(this.value)">
+              <option value="5">5 / hal</option>
+              <option value="10" selected>10 / hal</option>
+              <option value="25">25 / hal</option>
+              <option value="50">50 / hal</option>
+            </select>
+          </div>
+          <nav>
+            <ul class="pagination pagination-sm mb-0" id="paginationControls"></ul>
+          </nav>
+        </div>
       </div>
     </div>
   </div>
@@ -427,6 +450,8 @@
     ];
 
     let guests = JSON.parse(localStorage.getItem("kembaranas_guests")) || defaultGuests;
+    let currentPage = 1;
+    let rowsPerPage = 10;
 
     function saveGuests() {
       localStorage.setItem("kembaranas_guests", JSON.stringify(guests));
@@ -489,9 +514,7 @@
     }
 
     function renderDashboard() {
-      const tbody = document.getElementById('guestTableBody');
-      tbody.innerHTML = '';
-
+      // 1. STATISTIK KESELURUHAN
       let total = guests.length;
       let terkirimCount = guests.filter(g => g.terkirim).length;
       let belumKirimCount = total - terkirimCount;
@@ -502,48 +525,133 @@
       document.getElementById('statBelumKirim').innerText = belumKirimCount;
       document.getElementById('statHadir').innerText = hadirCount;
 
-      const baseUrl = window.location.origin + window.location.pathname;
-
-      guests.forEach((g, index) => {
-        const inviteLink = `${baseUrl}?to=${encodeURIComponent(g.nama)}${g.jabatan ? '&j=' + encodeURIComponent(g.jabatan) : ''}`;
-        const waText = `Assalamu'alaikum Wr. Wb. Kak/Bpk/Ibu *${g.nama}*,\n\nKami mengundang Anda untuk hadir pada acara *PEMBUKAAN KEMBARANAS III DAN PPIM PENEGAK TINGKAT NASIONAL* SAKO PRAMUKA SIT.\n\nDetail Undangan Digital Anda dapat diakses melalui tautan berikut:\n${inviteLink}\n\nTerima kasih.`;
-        const waLink = `https://api.whatsapp.com/send?phone=${g.wa}&text=${encodeURIComponent(waText)}`;
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td>
-            <strong>${escapeHtml(g.nama)}</strong>
-            ${g.jabatan ? `<br><small class="text-muted">${escapeHtml(g.jabatan)}</small>` : ''}
-          </td>
-          <td>${g.wa || '<span class="text-muted">-</span>'}</td>
-          <td>
-            <span class="badge badge-status ${g.terkirim ? 'bg-success' : 'bg-warning text-dark'}">
-              ${g.terkirim ? '<i class="fa-solid fa-check me-1"></i> Terkirim' : '<i class="fa-solid fa-clock me-1"></i> Belum Kirim'}
-            </span>
-          </td>
-          <td>
-            <span class="badge badge-status ${g.rsvp === 'Hadir' ? 'bg-info' : g.rsvp === 'Tidak Hadir' ? 'bg-danger' : 'bg-secondary'}">
-              ${g.rsvp}
-            </span>
-          </td>
-          <td class="text-center">
-            <a href="${inviteLink}" target="_blank" class="btn btn-sm btn-outline-info me-1" title="Pratinjau Undangan">
-              <i class="fa-solid fa-eye"></i>
-            </a>
-            <a href="${waLink}" target="_blank" onclick="markAsSent(${g.id})" class="btn btn-sm btn-success me-1" title="Kirim WA">
-              <i class="fa-brands fa-whatsapp"></i>
-            </a>
-            <button onclick="copyLink('${inviteLink}')" class="btn btn-sm btn-outline-primary me-1" title="Salin Link">
-              <i class="fa-solid fa-link"></i>
-            </button>
-            <button onclick="deleteGuest(${g.id})" class="btn btn-sm btn-outline-danger" title="Hapus">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      // 2. FILTERING PENCARIAN
+      const searchBox = document.getElementById('searchBox');
+      const q = searchBox ? searchBox.value.toLowerCase().trim() : '';
+      const filtered = guests.filter(g => {
+        const text = `${g.nama} ${g.jabatan || ''} ${g.wa || ''}`.toLowerCase();
+        return text.includes(q);
       });
+
+      // 3. PAGINATION CALCULATION
+      const totalFiltered = filtered.length;
+      const totalPages = Math.ceil(totalFiltered / rowsPerPage) || 1;
+      
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const endIndex = Math.min(startIndex + rowsPerPage, totalFiltered);
+      const pageGuests = filtered.slice(startIndex, endIndex);
+
+      // 4. RENDER TABEL
+      const tbody = document.getElementById('guestTableBody');
+      tbody.innerHTML = '';
+
+      if (pageGuests.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox display-6 d-block mb-2"></i>Tidak ada data tamu.</td></tr>`;
+      } else {
+        const baseUrl = window.location.origin + window.location.pathname;
+
+        pageGuests.forEach((g, index) => {
+          const actualIndex = startIndex + index + 1;
+          const inviteLink = `${baseUrl}?to=${encodeURIComponent(g.nama)}${g.jabatan ? '&j=' + encodeURIComponent(g.jabatan) : ''}`;
+          const waText = `Assalamu'alaikum Wr. Wb. Kak/Bpk/Ibu *${g.nama}*,\n\nKami mengundang Anda untuk hadir pada acara *PEMBUKAAN KEMBARANAS III DAN PPIM PENEGAK TINGKAT NASIONAL* SAKO PRAMUKA SIT.\n\nDetail Undangan Digital Anda dapat diakses melalui tautan berikut:\n${inviteLink}\n\nTerima kasih.`;
+          const waLink = `https://api.whatsapp.com/send?phone=${g.wa}&text=${encodeURIComponent(waText)}`;
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${actualIndex}</td>
+            <td>
+              <strong>${escapeHtml(g.nama)}</strong>
+              ${g.jabatan ? `<br><small class="text-muted">${escapeHtml(g.jabatan)}</small>` : ''}
+            </td>
+            <td>${g.wa || '<span class="text-muted">-</span>'}</td>
+            <td>
+              <span class="badge badge-status ${g.terkirim ? 'bg-success' : 'bg-warning text-dark'}">
+                ${g.terkirim ? '<i class="fa-solid fa-check me-1"></i> Terkirim' : '<i class="fa-solid fa-clock me-1"></i> Belum Kirim'}
+              </span>
+            </td>
+            <td>
+              <span class="badge badge-status ${g.rsvp === 'Hadir' ? 'bg-info' : g.rsvp === 'Tidak Hadir' ? 'bg-danger' : 'bg-secondary'}">
+                ${g.rsvp}
+              </span>
+            </td>
+            <td class="text-center">
+              <a href="${inviteLink}" target="_blank" class="btn btn-sm btn-outline-info me-1" title="Pratinjau Undangan">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <a href="${waLink}" target="_blank" onclick="markAsSent(${g.id})" class="btn btn-sm btn-success me-1" title="Kirim WA">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+              <button onclick="copyLink('${inviteLink}')" class="btn btn-sm btn-outline-primary me-1" title="Salin Link">
+                <i class="fa-solid fa-link"></i>
+              </button>
+              <button onclick="deleteGuest(${g.id})" class="btn btn-sm btn-outline-danger" title="Hapus">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // 5. RENDER KONTROL PAGINATION
+      renderPaginationControls(totalFiltered, totalPages, startIndex, endIndex);
+    }
+
+    function renderPaginationControls(totalFiltered, totalPages, startIndex, endIndex) {
+      const infoEl = document.getElementById('paginationInfo');
+      const navEl = document.getElementById('paginationControls');
+
+      if (totalFiltered === 0) {
+        infoEl.innerText = "Menampilkan 0 dari 0 tamu";
+        navEl.innerHTML = '';
+        return;
+      }
+
+      infoEl.innerText = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${totalFiltered} tamu`;
+
+      let navHtml = '';
+
+      // Tombol Previous
+      navHtml += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>`;
+
+      // Angka Halaman
+      for (let i = 1; i <= totalPages; i++) {
+        navHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+        </li>`;
+      }
+
+      // Tombol Next
+      navHtml += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>`;
+
+      navEl.innerHTML = navHtml;
+    }
+
+    function changePage(page) {
+      currentPage = page;
+      renderDashboard();
+    }
+
+    function changeRowsPerPage(val) {
+      rowsPerPage = parseInt(val) || 10;
+      currentPage = 1;
+      renderDashboard();
+    }
+
+    function filterGuests() {
+      currentPage = 1;
+      renderDashboard();
     }
 
     function addGuest(e) {
@@ -642,7 +750,6 @@
       }
     }
 
-    /* FITUR 1: UNDUH UNDANGAN DALAM BENTUK PDF */
     function downloadPDF() {
       const cardArea = document.getElementById('invitationCardArea');
       const nama = document.getElementById('displayNamaTamu').innerText || 'Tamu';
@@ -662,7 +769,6 @@
       html2pdf().set(opt).from(cardArea).save();
     }
 
-    /* FITUR 2: EXPORT ALL LINK & PESAN WA KE EXCEL (.XLSX) */
     function exportExcel() {
       const baseUrl = window.location.origin + window.location.pathname;
 
@@ -684,7 +790,6 @@
 
       const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-      // Mengatur lebar kolom agar rapi di Excel
       worksheet['!cols'] = [
         { wch: 5 },   // No
         { wch: 30 },  // Nama
@@ -715,22 +820,6 @@
       a.href = url;
       a.download = 'Laporan_Undangan_Kembaranas_III.csv';
       a.click();
-    }
-
-    function resetToDemoData() {
-      if (confirm("Kembalikan data ke sampel bawaan?")) {
-        guests = defaultGuests;
-        saveGuests();
-      }
-    }
-
-    function filterGuests() {
-      const q = document.getElementById('searchBox').value.toLowerCase();
-      const rows = document.querySelectorAll('#guestTableBody tr');
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(q) ? '' : 'none';
-      });
     }
 
     function escapeHtml(text) {
