@@ -198,7 +198,7 @@
 
     .undangan-img {
       width: 100%;
-      height auto;
+      height: auto;
       display: block;
     }
 
@@ -453,7 +453,7 @@
 
   <!-- ==================== 3. DASHBOARD ADMIN ==================== -->
   <div id="adminView" class="d-none">
-    <!-- TOMBOL MENU HAMBURGER (MENGGUNAKAN ATRIBUT BOOTSTRAP RESMI NATIVE + JS FALLBACK) -->
+    <!-- TOMBOL MENU HAMBURGER -->
     <button id="sidebarToggleBtn" class="hamburger-float-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#leftSidebarNav" aria-controls="leftSidebarNav" title="Buka Menu Navigasi">
       <div class="hamburger-icon-wrapper">
         <i id="hamburgerIcon" class="fa-solid fa-bars"></i>
@@ -669,14 +669,6 @@
       }
     }
 
-    function toggleSidebar() {
-      const sidebarEl = document.getElementById('leftSidebarNav');
-      if (typeof bootstrap !== 'undefined' && sidebarEl) {
-        const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(sidebarEl);
-        bsOffcanvas.toggle();
-      }
-    }
-
     function bukaUndangan() {
       document.getElementById('coverView').classList.add('d-none');
       document.getElementById('guestView').classList.remove('d-none');
@@ -694,11 +686,15 @@
 
     function closeSidebar() {
       const sidebarEl = document.getElementById('leftSidebarNav');
-      if (typeof bootstrap !== 'undefined' && sidebarEl) {
-        const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarEl);
-        if (bsOffcanvas) {
-          bsOffcanvas.hide();
+      if (sidebarEl) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Offcanvas) {
+          const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarEl);
+          if (bsOffcanvas) {
+            bsOffcanvas.hide();
+            return;
+          }
         }
+        sidebarEl.classList.remove('show');
       }
     }
 
