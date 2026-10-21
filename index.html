@@ -5,7 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Undangan Digital Kembaranas III - Sako SIT</title>
 
-  <!-- FAVICON KONFIGURASI LENGKAP -->
+  <!-- META OPEN GRAPH (WHATSAPP PREVIEW LOGO) -->
+  <meta property="og:title" content="Undangan Digital Kembaranas III - Sako SIT">
+  <meta property="og:description" content="Undangan Resmi Pembukaan Kembaranas III & PPIM Penegak Tingkat Nasional Sako Pramuka SIT. Klik untuk melihat undangan Anda.">
+  <meta property="og:image" content="https://sakositlampung.github.io/undangan-kembaranas/logo.png">
+  <meta property="og:image:secure_url" content="https://sakositlampung.github.io/undangan-kembaranas/logo.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="400">
+  <meta property="og:image:height" content="400">
+  <meta property="og:type" content="website">
+
+  <!-- FAVICON KONFIGURASI -->
   <link id="appFavicon" rel="icon" type="image/png" sizes="32x32" href="logo.png">
   <link rel="shortcut icon" type="image/x-icon" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
@@ -351,19 +361,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bootstrap.bundle.min.js"></script>
   <script>
-    // URL CDN DRIVE LOGO 2 UNTUK FALLBACK DYNAMIC FAVICON
     const fallbackLogoUrl = 'https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh=s256';
 
     function setupFavicon() {
       const favEl = document.getElementById('appFavicon');
-      // Uji apakah logo.png atau 2.png ada di github
       const img = new Image();
       img.src = 'logo.png';
       img.onload = function() {
         favEl.href = 'logo.png';
       };
       img.onerror = function() {
-        // Jika file lokal belum diupload, gunakan CDN Google Direct Link
         favEl.href = fallbackLogoUrl;
       };
     }
