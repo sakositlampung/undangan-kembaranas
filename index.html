@@ -15,14 +15,8 @@
   <meta property="og:title" content="Undangan Digital Kembaranas III - Sako SIT">
   <meta property="og:description" content="Undangan Resmi Pembukaan Kembaranas III & PPIM Penegak Tingkat Nasional Sako Pramuka SIT. Klik untuk melihat undangan Anda.">
   
-  <!-- Primary OG Image (Logo Repo GitHub) -->
   <meta property="og:image" content="https://sakositlampung.github.io/undangan-kembaranas/logo.png">
   <meta property="og:image:secure_url" content="https://sakositlampung.github.io/undangan-kembaranas/logo.png">
-  
-  <!-- Backup OG Image (Direct Google Drive CDN) -->
-  <meta property="og:image" content="https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh">
-  <meta property="og:image:secure_url" content="https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh">
-  
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="400">
   <meta property="og:image:height" content="400">
@@ -55,7 +49,7 @@
       overflow-x: hidden;
     }
 
-    /* 1. TOMBOL HAMBURGER FLOAT DI SISI KIRI ATAS */
+    /* 1. TOMBOL HAMBURGER HANYA DILAYOUT DI DASHBOARD ADMIN */
     .hamburger-float-btn {
       position: fixed;
       top: 15px;
@@ -83,7 +77,6 @@
 
     .hamburger-icon-wrapper {
       font-size: 1.3rem;
-      transition: transform 0.3s ease;
     }
 
     /* 2. OFFCANVAS SIDEBAR NAVIGASI KIRI */
@@ -267,7 +260,7 @@
     .admin-header {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: #fff;
-      padding: 20px 0 20px 65px;
+      padding: 20px 0 20px 75px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
@@ -317,7 +310,7 @@
 
     @media (max-width: 576px) {
       .admin-header {
-        padding-left: 70px;
+        padding-left: 75px;
       }
       .admin-header h4 {
         font-size: 1.1rem;
@@ -329,13 +322,6 @@
   </style>
 </head>
 <body>
-
-  <!-- TOMBOL MENU HAMBURGER (SISI KIRI ATAS) -->
-  <button id="sidebarToggleBtn" class="hamburger-float-btn" data-bs-toggle="offcanvas" data-bs-target="#leftSidebarNav" aria-controls="leftSidebarNav" title="Buka Menu Navigasi">
-    <div class="hamburger-icon-wrapper">
-      <i id="hamburgerIcon" class="fa-solid fa-bars"></i>
-    </div>
-  </button>
 
   <!-- OFFCANVAS NAVIGASI SAMPING KIRI -->
   <div class="offcanvas offcanvas-start" tabindex="-1" id="leftSidebarNav" aria-labelledby="leftSidebarNavLabel">
@@ -414,10 +400,10 @@
   </div>
 
   <!-- ==================== 2. TAMPILAN UNDANGAN UTAMA ==================== -->
-  <div id="guestView" class="container py-3 d-none" style="margin-top: 40px;">
+  <div id="guestView" class="container py-3 d-none">
     <div class="guest-container">
       <div class="card-wrapper" id="invitationCardArea">
-        <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img" onerror="this.src='https://lh3.googleusercontent.com/d/1Zl9CQud2PZgA1z6sSEG6x6CoEUwM03R1'">
+        <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img" id="undanganMainImg" onerror="this.src='https://lh3.googleusercontent.com/d/1Zl9CQud2PZgA1z6sSEG6x6CoEUwM03R1'">
         
         <div class="nama-overlay">
           <div class="nama-text" id="displayNamaTamu">Kak Feri Susanto, S.Kom</div>
@@ -435,7 +421,7 @@
           <button class="btn btn-outline-danger btn-rsvp" onclick="submitRSVP('Tidak Hadir')">
             <i class="fa-solid fa-circle-xmark me-1"></i> Halangan
           </button>
-          <button class="btn btn-download-pdf" onclick="downloadPDF()">
+          <button class="btn btn-download-pdf" id="pdfBtn" onclick="downloadPDF()">
             <i class="fa-solid fa-file-pdf me-2"></i> Unduh Undangan PDF
           </button>
         </div>
@@ -446,6 +432,13 @@
 
   <!-- ==================== 3. DASHBOARD ADMIN ==================== -->
   <div id="adminView" class="d-none">
+    <!-- TOMBOL MENU HAMBURGER (HANYA MUNCUL DI DASHBOARD ADMIN) -->
+    <button id="sidebarToggleBtn" class="hamburger-float-btn" onclick="toggleSidebar()" title="Buka Menu Navigasi">
+      <div class="hamburger-icon-wrapper">
+        <i id="hamburgerIcon" class="fa-solid fa-bars"></i>
+      </div>
+    </button>
+
     <header class="admin-header mb-4">
       <div class="container-fluid pe-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -629,11 +622,11 @@
       const iconEl = document.getElementById('hamburgerIcon');
 
       sidebarEl.addEventListener('show.bs.offcanvas', function () {
-        iconEl.className = 'fa-solid fa-xmark';
+        if (iconEl) iconEl.className = 'fa-solid fa-xmark';
       });
 
       sidebarEl.addEventListener('hide.bs.offcanvas', function () {
-        iconEl.className = 'fa-solid fa-bars';
+        if (iconEl) iconEl.className = 'fa-solid fa-bars';
       });
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -653,6 +646,12 @@
       } else if (mode === 'admin' || !guestName) {
         showAdminView();
       }
+    }
+
+    function toggleSidebar() {
+      const sidebarEl = document.getElementById('leftSidebarNav');
+      const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(sidebarEl);
+      bsOffcanvas.toggle();
     }
 
     function bukaUndangan() {
@@ -698,12 +697,10 @@
       document.getElementById('menuItemAdmin').classList.remove('active');
     }
 
-    // KONTROL FILTER RSVP KEHADIRAN
     function setRsvpFilter(status) {
       currentRsvpFilter = status;
       currentPage = 1;
 
-      // Update Tampilan Tombol Filter
       document.getElementById('btnFilterAll').classList.toggle('active', status === 'all');
       document.getElementById('btnFilterHadir').classList.toggle('active', status === 'Hadir');
       document.getElementById('btnFilterTidakHadir').classList.toggle('active', status === 'Tidak Hadir');
@@ -719,7 +716,6 @@
     }
 
     function renderDashboard() {
-      // 1. HITUNG STATISTIK KESELURUHAN & BADGES
       let total = guests.length;
       let terkirimCount = guests.filter(g => g.terkirim).length;
       let belumKirimCount = total - terkirimCount;
@@ -732,13 +728,11 @@
       document.getElementById('statBelumKirim').innerText = belumKirimCount;
       document.getElementById('statHadir').innerText = hadirCount;
 
-      // Update Sidebar Badges
       document.getElementById('sbBadgeAll').innerText = total;
       document.getElementById('sbBadgeHadir').innerText = hadirCount;
       document.getElementById('sbBadgeTidakHadir').innerText = tdkHadirCount;
       document.getElementById('sbBadgeBelum').innerText = belumResponCount;
 
-      // 2. FILTERING DATA BERDASARKAN KONTROL RSVP & PENCARIAN
       const searchBox = document.getElementById('searchBox');
       const q = searchBox ? searchBox.value.toLowerCase().trim() : '';
 
@@ -758,7 +752,6 @@
         return matchSearch && matchRsvp;
       });
 
-      // 3. LOGIKA PAGINATION
       const totalFiltered = filtered.length;
       const totalPages = Math.ceil(totalFiltered / rowsPerPage) || 1;
       
@@ -769,7 +762,6 @@
       const endIndex = Math.min(startIndex + rowsPerPage, totalFiltered);
       const pageGuests = filtered.slice(startIndex, endIndex);
 
-      // 4. RENDER DOKUMEN TABEL
       const tbody = document.getElementById('guestTableBody');
       tbody.innerHTML = '';
 
@@ -821,7 +813,6 @@
         });
       }
 
-      // 5. RENDER NAVIGASI PAGINATION
       renderPaginationControls(totalFiltered, totalPages, startIndex, endIndex);
     }
 
@@ -972,23 +963,32 @@
       }
     }
 
+    /* FITUR UNDUH UNDANGAN DALAM BENTUK PDF KUSTOM */
     function downloadPDF() {
       const cardArea = document.getElementById('invitationCardArea');
-      const nama = document.getElementById('displayNamaTamu').innerText || 'Tamu';
+      const namaEl = document.getElementById('displayNamaTamu');
+      const nama = (namaEl ? namaEl.innerText : '').trim() || 'Tamu';
       const cleanName = nama.replace(/[^a-zA-Z0-9]/g, '_');
       const filename = `Undangan_Kembaranas_III_${cleanName}.pdf`;
 
-      showPopNotification("Mengunduh PDF... 📄", "Berkas PDF undangan Anda sedang diproses. Pengunduhan akan berjalan secara otomatis dalam beberapa detik.");
+      showPopNotification("Mengunduh PDF... 📄", "Berkas PDF undangan Anda sedang diproses. Pengunduhan akan berjalan secara otomatis.");
 
       const opt = {
         margin:       0,
         filename:     filename,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        html2canvas:  { scale: 2, useCORS: true, allowTaint: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(cardArea).save();
+      if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(cardArea).save().catch(err => {
+          console.error("PDF generation error:", err);
+          alert("Gagal mengunduh PDF secara otomatis. Silakan gunakan fungsi cetak browser.");
+        });
+      } else {
+        alert("Pustaka pembuat PDF sedang dimuat, silakan coba beberapa saat lagi.");
+      }
     }
 
     function exportExcel() {
