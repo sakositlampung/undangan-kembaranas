@@ -308,6 +308,17 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       height: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    .stat-icon {
+      font-size: 1.8rem;
+      opacity: 0.85;
     }
 
     .badge-status {
@@ -338,6 +349,30 @@
 
     .pagination .page-link {
       color: var(--primary-color);
+    }
+
+    /* KOLOM PENCARIAN BISA DILAPANGKAN / DICIUTKAN */
+    .expandable-search-box {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .search-input-collapsible {
+      width: 0;
+      opacity: 0;
+      padding: 0;
+      border: none;
+      transition: all 0.3s ease-in-out;
+      pointer-events: none;
+    }
+
+    .expandable-search-box.expanded .search-input-collapsible {
+      width: 180px;
+      opacity: 1;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid #ced4da;
+      pointer-events: auto;
     }
 
     @media print {
@@ -514,30 +549,50 @@
     </header>
 
     <div class="container-fluid px-3 mb-5">
-      <!-- STATISTIK LAPORAN ORGANISASI -->
+      <!-- STATISTIK LAPORAN ORGANISASI DENGAN IKON BERWARNA -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
           <div class="card stat-card bg-white p-3 border-start border-primary border-4">
-            <small class="text-muted fw-bold">TOTAL UNDANGAN</small>
-            <h3 class="fw-bold mb-0 text-primary" id="statTotal">0</h3>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted fw-bold">TOTAL UNDANGAN</small>
+                <h3 class="fw-bold mb-0 text-primary" id="statTotal">0</h3>
+              </div>
+              <i class="fa-solid fa-users text-primary stat-icon"></i>
+            </div>
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="card stat-card bg-white p-3 border-start border-success border-4">
-            <small class="text-muted fw-bold">SUDAH TERKIRIM</small>
-            <h3 class="fw-bold mb-0 text-success" id="statTerkirim">0</h3>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted fw-bold">SUDAH TERKIRIM</small>
+                <h3 class="fw-bold mb-0 text-success" id="statTerkirim">0</h3>
+              </div>
+              <i class="fa-solid fa-paper-plane text-success stat-icon"></i>
+            </div>
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="card stat-card bg-white p-3 border-start border-warning border-4">
-            <small class="text-muted fw-bold">BELUM TERKIRIM</small>
-            <h3 class="fw-bold mb-0 text-warning" id="statBelumKirim">0</h3>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted fw-bold">BELUM TERKIRIM</small>
+                <h3 class="fw-bold mb-0 text-warning" id="statBelumKirim">0</h3>
+              </div>
+              <i class="fa-solid fa-hourglass-half text-warning stat-icon"></i>
+            </div>
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="card stat-card bg-white p-3 border-start border-info border-4">
-            <small class="text-muted fw-bold">KONFIRMASI HADIR</small>
-            <h3 class="fw-bold mb-0 text-info" id="statHadir">0</h3>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted fw-bold">KONFIRMASI HADIR</small>
+                <h3 class="fw-bold mb-0 text-info" id="statHadir">0</h3>
+              </div>
+              <i class="fa-solid fa-user-check text-info stat-icon"></i>
+            </div>
           </div>
         </div>
       </div>
@@ -565,19 +620,40 @@
         </div>
       </div>
 
-      <!-- TABEL DAFTAR UNDANGAN DAN BARIS KONTROL RSVP -->
+      <!-- TABEL DAFTAR UNDANGAN DENGAN KONTROL PAGINATION & PENCARIAN DI ATAS -->
       <div class="table-responsive">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2"></i>Daftar Undangan & Status</h5>
           
           <div class="d-flex align-items-center flex-wrap gap-2">
+            <!-- FILTER RSVP -->
             <div class="btn-group btn-group-sm filter-btn-group" role="group" aria-label="Filter Kehadiran">
               <button type="button" class="btn btn-outline-primary active" id="btnFilterAll" onclick="setRsvpFilter('all')">Semua</button>
               <button type="button" class="btn btn-outline-success" id="btnFilterHadir" onclick="setRsvpFilter('Hadir')">Hadir</button>
               <button type="button" class="btn btn-outline-danger" id="btnFilterTidakHadir" onclick="setRsvpFilter('Tidak Hadir')">Halangan</button>
               <button type="button" class="btn btn-outline-warning text-dark" id="btnFilterBelum" onclick="setRsvpFilter('Belum Respon')">Belum Respon</button>
             </div>
-            <input type="text" id="searchBox" class="form-control form-control-sm" style="max-width: 200px;" placeholder="Cari nama/jabatan..." onkeyup="filterGuests()">
+
+            <!-- CONTROLS PAGINATION DIPINDAHKAN KE ATAS DENGAN RAPI -->
+            <div class="d-flex align-items-center gap-1 ms-1">
+              <select id="rowsPerPageSelect" class="form-select form-select-sm" style="width: auto;" onchange="changeRowsPerPage(this.value)">
+                <option value="5">5/hal</option>
+                <option value="10" selected>10/hal</option>
+                <option value="25">25/hal</option>
+                <option value="50">50/hal</option>
+              </select>
+              <nav>
+                <ul class="pagination pagination-sm mb-0" id="paginationControls"></ul>
+              </nav>
+            </div>
+
+            <!-- PENCARIAN BISA DILAPANGKAN / DICIUTKAN -->
+            <div class="expandable-search-box ms-1" id="searchBoxContainer">
+              <button class="btn btn-sm btn-outline-secondary rounded-circle" type="button" onclick="toggleExpandSearch()" title="Cari Nama/Jabatan">
+                <i class="fa-solid fa-magnifying-glass" id="searchIcon"></i>
+              </button>
+              <input type="text" id="searchBox" class="form-control form-control-sm search-input-collapsible ms-1 rounded-pill" placeholder="Cari nama/jabatan..." onkeyup="filterGuests()">
+            </div>
           </div>
         </div>
 
@@ -597,20 +673,9 @@
           </tbody>
         </table>
 
-        <!-- NAVIGASI PAGINATION -->
-        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2 pt-2 border-top">
-          <div class="d-flex align-items-center gap-2">
-            <small class="text-muted" id="paginationInfo">Menampilkan 0 tamu</small>
-            <select id="rowsPerPageSelect" class="form-select form-select-sm" style="width: auto;" onchange="changeRowsPerPage(this.value)">
-              <option value="5">5 / hal</option>
-              <option value="10" selected>10 / hal</option>
-              <option value="25">25 / hal</option>
-              <option value="50">50 / hal</option>
-            </select>
-          </div>
-          <nav>
-            <ul class="pagination pagination-sm mb-0" id="paginationControls"></ul>
-          </nav>
+        <!-- FOOTER INFORMASI TOTAL DATA -->
+        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+          <small class="text-muted fw-semibold" id="paginationInfo">Menampilkan 0 tamu</small>
         </div>
       </div>
     </div>
@@ -668,7 +733,30 @@
       renderDashboard();
     }
 
-    /* FUNGSI KONTROL SIDEBAR MANDIRI (100% VANILLA JS & CSS ANIMATION) */
+    /* KONTROL PENCARIAN BISA DIMEKARAN/DICIUTKAN */
+    function toggleExpandSearch(forceState) {
+      const container = document.getElementById('searchBoxContainer');
+      const input = document.getElementById('searchBox');
+      const icon = document.getElementById('searchIcon');
+
+      let isExpanded = container.classList.contains('expanded');
+      let shouldExpand = (typeof forceState === 'boolean') ? forceState : !isExpanded;
+
+      if (shouldExpand) {
+        container.classList.add('expanded');
+        icon.className = 'fa-solid fa-xmark text-danger';
+        setTimeout(() => input.focus(), 150);
+      } else {
+        container.classList.remove('expanded');
+        icon.className = 'fa-solid fa-magnifying-glass';
+        if (input.value) {
+          input.value = '';
+          filterGuests();
+        }
+      }
+    }
+
+    /* KONTROL SIDEBAR MANDIRI */
     function toggleSidebar(forceState) {
       const sidebarEl = document.getElementById('leftSidebarNav');
       const overlayEl = document.getElementById('sidebarOverlay');
