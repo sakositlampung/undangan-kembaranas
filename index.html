@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Undangan Digital Kembaranas III - Sako SIT</title>
 
   <!-- META GENERAL -->
@@ -45,15 +45,101 @@
       --secondary-color: #8c2820;
       --accent-color: #d4a359;
       --bg-dark: #231b17;
+      --sidebar-width: 280px;
     }
 
     body {
       background-color: #f4f1ea;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       color: #333;
+      overflow-x: hidden;
     }
 
-    /* 1. HALAMAN COVER UNDANGAN */
+    /* 1. TOMBOL HAMBURGER FLOAT DI SISI KIRI ATAS */
+    .hamburger-float-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1050;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #fff;
+      border: 2px solid var(--accent-color);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-float-btn:hover {
+      background: var(--secondary-color);
+      transform: scale(1.05);
+      color: #f3e5ab;
+    }
+
+    .hamburger-icon-wrapper {
+      font-size: 1.3rem;
+      transition: transform 0.3s ease;
+    }
+
+    /* 2. OFFCANVAS SIDEBAR NAVIGASI KIRI */
+    .offcanvas-start {
+      width: var(--sidebar-width);
+      background: #2b211b;
+      color: #fff;
+      border-right: 2px solid var(--accent-color);
+    }
+
+    .sidebar-header {
+      padding: 20px 15px;
+      background: linear-gradient(135deg, var(--primary-color), #2b211b);
+      border-bottom: 1px solid rgba(212, 163, 89, 0.2);
+    }
+
+    .sidebar-logo {
+      width: 45px;
+      height: auto;
+      margin-right: 12px;
+    }
+
+    .sidebar-nav-item {
+      color: #dcd6cd;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 4px 10px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .sidebar-nav-item:hover, .sidebar-nav-item.active {
+      background: rgba(212, 163, 89, 0.15);
+      color: #f3e5ab;
+      transform: translateX(3px);
+    }
+
+    .sidebar-nav-item i {
+      width: 28px;
+      font-size: 1.1rem;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.75rem;
+      text-uppercase: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-color);
+      padding: 15px 20px 5px;
+      font-weight: 700;
+    }
+
+    /* 3. HALAMAN COVER UNDANGAN */
     #coverView {
       min-height: 100vh;
       display: flex;
@@ -77,7 +163,7 @@
     }
 
     .cover-logo {
-      width: 140px;
+      width: 130px;
       height: auto;
       margin-bottom: 20px;
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
@@ -100,7 +186,7 @@
       background: linear-gradient(45deg, #f3e5ab, #d4a359);
     }
 
-    /* 2. TAMPILAN KARTU UNDANGAN UTAMA */
+    /* 4. TAMPILAN KARTU UNDANGAN UTAMA */
     .guest-container {
       max-width: 650px;
       margin: 20px auto;
@@ -135,26 +221,26 @@
 
     .nama-text {
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: clamp(0.85rem, 2.5vw, 1.15rem);
       color: #1a1a1a;
       margin-bottom: 2px;
     }
 
     .jabatan-text {
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: clamp(0.65rem, 2vw, 0.85rem);
       color: #555555;
     }
 
     .rsvp-section {
-      padding: 25px;
+      padding: 25px 15px;
       background: #ffffff;
       text-align: center;
       border-top: 3px solid var(--accent-color);
     }
 
     .btn-rsvp {
-      min-width: 130px;
+      min-width: 120px;
       font-weight: 600;
       border-radius: 30px;
       padding: 10px 18px;
@@ -177,18 +263,18 @@
       transform: translateY(-2px);
     }
 
-    /* 3. DASHBOARD ADMIN */
+    /* 5. DASHBOARD ADMIN RESPONSIVE */
     .admin-header {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: #fff;
-      padding: 20px 0;
+      padding: 20px 0 20px 65px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .admin-logo {
-      width: 50px;
+      width: 45px;
       height: auto;
-      margin-right: 15px;
+      margin-right: 12px;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
 
@@ -196,29 +282,27 @@
       border: none;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      height: 100%;
     }
 
     .badge-status {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       padding: 6px 12px;
       border-radius: 20px;
     }
 
     .table-responsive {
       background: #fff;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      padding: 15px;
+      padding: 18px;
     }
 
-    .nav-toggle-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000;
-      border-radius: 50px;
-      padding: 12px 24px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    .filter-btn-group .btn {
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 5px 14px;
     }
 
     .pagination .page-item.active .page-link {
@@ -230,14 +314,84 @@
     .pagination .page-link {
       color: var(--primary-color);
     }
+
+    @media (max-width: 576px) {
+      .admin-header {
+        padding-left: 70px;
+      }
+      .admin-header h4 {
+        font-size: 1.1rem;
+      }
+      .table-responsive {
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- TOMBOL MODES -->
-  <button id="toggleViewBtn" class="btn btn-dark nav-toggle-btn" onclick="toggleView()">
-    <i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin
+  <!-- TOMBOL MENU HAMBURGER (SISI KIRI ATAS) -->
+  <button id="sidebarToggleBtn" class="hamburger-float-btn" data-bs-toggle="offcanvas" data-bs-target="#leftSidebarNav" aria-controls="leftSidebarNav" title="Buka Menu Navigasi">
+    <div class="hamburger-icon-wrapper">
+      <i id="hamburgerIcon" class="fa-solid fa-bars"></i>
+    </div>
   </button>
+
+  <!-- OFFCANVAS NAVIGASI SAMPING KIRI -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="leftSidebarNav" aria-labelledby="leftSidebarNavLabel">
+    <div class="sidebar-header d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <img src="logo.png" alt="Logo Sako SIT" class="sidebar-logo" onerror="handleLogoError(this)">
+        <div>
+          <h6 class="fw-bold mb-0 text-warning" id="leftSidebarNavLabel">Kembaranas III</h6>
+          <small class="text-white-50" style="font-size: 0.75rem;">Sako Pramuka SIT</small>
+        </div>
+      </div>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+      <!-- NAVIGASI UTAMA HALAMAN -->
+      <div class="sidebar-section-title">Navigasi Utama</div>
+      <a class="sidebar-nav-item active" id="menuItemAdmin" onclick="switchViewFromSidebar('admin')">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
+      </a>
+      <a class="sidebar-nav-item" id="menuItemGuest" onclick="switchViewFromSidebar('guest')">
+        <i class="fa-solid fa-envelope"></i> Pratinjau Undangan
+      </a>
+
+      <!-- KONTROL & FILTER RSVP DATA -->
+      <div class="sidebar-section-title">Kontrol Data RSVP Kehadiran</div>
+      <a class="sidebar-nav-item" onclick="applyRsvpFilterFromSidebar('all')">
+        <i class="fa-solid fa-users text-primary"></i> Semua Tamu <span class="badge bg-secondary ms-auto" id="sbBadgeAll">0</span>
+      </a>
+      <a class="sidebar-nav-item" onclick="applyRsvpFilterFromSidebar('Hadir')">
+        <i class="fa-solid fa-circle-check text-success"></i> Konfirmasi Hadir <span class="badge bg-success ms-auto" id="sbBadgeHadir">0</span>
+      </a>
+      <a class="sidebar-nav-item" onclick="applyRsvpFilterFromSidebar('Tidak Hadir')">
+        <i class="fa-solid fa-circle-xmark text-danger"></i> Halangan <span class="badge bg-danger ms-auto" id="sbBadgeTidakHadir">0</span>
+      </a>
+      <a class="sidebar-nav-item" onclick="applyRsvpFilterFromSidebar('Belum Respon')">
+        <i class="fa-solid fa-clock text-warning"></i> Belum Konfirmasi <span class="badge bg-warning text-dark ms-auto" id="sbBadgeBelum">0</span>
+      </a>
+
+      <!-- EKSPOR & AKSI CEPAT -->
+      <div class="sidebar-section-title">Aksi & Ekspor Data</div>
+      <a class="sidebar-nav-item" onclick="exportExcel(); closeSidebar();">
+        <i class="fa-solid fa-file-excel text-success"></i> Ekspor Excel (.xlsx)
+      </a>
+      <a class="sidebar-nav-item" onclick="exportCSV(); closeSidebar();">
+        <i class="fa-solid fa-file-csv text-info"></i> Ekspor CSV
+      </a>
+      <a class="sidebar-nav-item" onclick="copyWALaporan(); closeSidebar();">
+        <i class="fa-solid fa-copy text-light"></i> Salin Laporan WA
+      </a>
+    </div>
+
+    <div class="p-3 border-top border-secondary text-center text-white-50 small">
+      Undangan Digital Sako SIT &copy; 2026
+    </div>
+  </div>
 
   <!-- ==================== 1. COVER UNDANGAN ==================== -->
   <div id="coverView">
@@ -260,7 +414,7 @@
   </div>
 
   <!-- ==================== 2. TAMPILAN UNDANGAN UTAMA ==================== -->
-  <div id="guestView" class="container py-3 d-none">
+  <div id="guestView" class="container py-3 d-none" style="margin-top: 40px;">
     <div class="guest-container">
       <div class="card-wrapper" id="invitationCardArea">
         <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img" onerror="this.src='https://lh3.googleusercontent.com/d/1Zl9CQud2PZgA1z6sSEG6x6CoEUwM03R1'">
@@ -274,14 +428,14 @@
       <!-- Konfirmasi Kehadiran (RSVP) & Unduh PDF -->
       <div class="rsvp-section">
         <h5 class="mb-3 text-secondary"><i class="fa-solid fa-clipboard-check me-2"></i>Konfirmasi Kehadiran</h5>
-        <div id="rsvpButtons" class="mb-3">
-          <button class="btn btn-success btn-rsvp me-2 mb-2" onclick="submitRSVP('Hadir')">
+        <div id="rsvpButtons" class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+          <button class="btn btn-success btn-rsvp" onclick="submitRSVP('Hadir')">
             <i class="fa-solid fa-circle-check me-1"></i> Saya Hadir
           </button>
-          <button class="btn btn-outline-danger btn-rsvp me-2 mb-2" onclick="submitRSVP('Tidak Hadir')">
+          <button class="btn btn-outline-danger btn-rsvp" onclick="submitRSVP('Tidak Hadir')">
             <i class="fa-solid fa-circle-xmark me-1"></i> Halangan
           </button>
-          <button class="btn btn-download-pdf mb-2" onclick="downloadPDF()">
+          <button class="btn btn-download-pdf" onclick="downloadPDF()">
             <i class="fa-solid fa-file-pdf me-2"></i> Unduh Undangan PDF
           </button>
         </div>
@@ -293,8 +447,8 @@
   <!-- ==================== 3. DASHBOARD ADMIN ==================== -->
   <div id="adminView" class="d-none">
     <header class="admin-header mb-4">
-      <div class="container">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
+      <div class="container-fluid pe-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
           <div class="d-flex align-items-center">
             <img src="logo.png" id="logoAdmin" alt="Logo Kembaranas III" class="admin-logo" onerror="handleLogoError(this)">
             <div>
@@ -302,7 +456,7 @@
               <p class="mb-0 text-white-50 small">Satuan Komunitas Pramuka Sekolah Islam Terpadu (Sako SIT)</p>
             </div>
           </div>
-          <div class="mt-2 mt-md-0 d-flex gap-2 flex-wrap">
+          <div class="d-flex gap-2 flex-wrap">
             <button class="btn btn-light btn-sm" onclick="copyWALaporan()"><i class="fa-solid fa-copy me-1"></i> Salin Laporan WA</button>
             <button class="btn btn-outline-light btn-sm" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
             <button class="btn btn-warning btn-sm text-dark fw-bold" onclick="exportExcel()"><i class="fa-solid fa-file-excel me-1"></i> Export Excel (.xlsx)</button>
@@ -311,7 +465,7 @@
       </div>
     </header>
 
-    <div class="container mb-5">
+    <div class="container-fluid px-3 mb-5">
       <!-- STATISTIK LAPORAN ORGANISASI -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
@@ -357,18 +511,26 @@
               <input type="text" class="form-control" id="inputWA" placeholder="No WhatsApp (misal: 628123456789)">
             </div>
             <div class="col-md-1">
-              <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-plus"></i></button>
+              <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-plus me-1"></i></button>
             </div>
           </form>
         </div>
       </div>
 
-      <!-- TABEL DAFTAR UNDANGAN -->
+      <!-- TABEL DAFTAR UNDANGAN DAN BARIS KONTROL RSVP -->
       <div class="table-responsive">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2"></i>Daftar Undangan & Status</h5>
-          <div class="d-flex gap-2 align-items-center">
-            <input type="text" id="searchBox" class="form-control form-control-sm" placeholder="Cari nama..." onkeyup="filterGuests()">
+          
+          <!-- BARIS KONTROL FILTER RSVP -->
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <div class="btn-group btn-group-sm filter-btn-group" role="group" aria-label="Filter Kehadiran">
+              <button type="button" class="btn btn-outline-primary active" id="btnFilterAll" onclick="setRsvpFilter('all')">Semua</button>
+              <button type="button" class="btn btn-outline-success" id="btnFilterHadir" onclick="setRsvpFilter('Hadir')">Hadir</button>
+              <button type="button" class="btn btn-outline-danger" id="btnFilterTidakHadir" onclick="setRsvpFilter('Tidak Hadir')">Halangan</button>
+              <button type="button" class="btn btn-outline-warning text-dark" id="btnFilterBelum" onclick="setRsvpFilter('Belum Respon')">Belum Respon</button>
+            </div>
+            <input type="text" id="searchBox" class="form-control form-control-sm" style="max-width: 200px;" placeholder="Cari nama/jabatan..." onkeyup="filterGuests()">
           </div>
         </div>
 
@@ -379,7 +541,7 @@
               <th>Nama & Jabatan</th>
               <th>No WhatsApp</th>
               <th>Status Kirim</th>
-              <th>Kehadiran</th>
+              <th>Kehadiran (RSVP)</th>
               <th class="text-center">Aksi</th>
             </tr>
           </thead>
@@ -416,7 +578,7 @@
             <i class="fa-solid fa-circle-check text-success display-3"></i>
           </div>
           <h5 class="fw-bold text-dark mb-2" id="popTitle">Berhasil!</h5>
-          <p class="text-muted small mb-3" id="popMessage">Link undangan telah berhasil disalin. Siap untuk disebarkan dengan penuh keberkahan! ✨</p>
+          <p class="text-muted small mb-3" id="popMessage">Proses berhasil dilakukan.</p>
           <button type="button" class="btn btn-success btn-sm rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Siap, Mantap!</button>
         </div>
       </div>
@@ -452,6 +614,7 @@
     let guests = JSON.parse(localStorage.getItem("kembaranas_guests")) || defaultGuests;
     let currentPage = 1;
     let rowsPerPage = 10;
+    let currentRsvpFilter = 'all';
 
     function saveGuests() {
       localStorage.setItem("kembaranas_guests", JSON.stringify(guests));
@@ -460,6 +623,18 @@
 
     function initView() {
       setupFavicon();
+
+      // SETUP EVENT LISTENER HAMBURGER TO X TRANSITION
+      const sidebarEl = document.getElementById('leftSidebarNav');
+      const iconEl = document.getElementById('hamburgerIcon');
+
+      sidebarEl.addEventListener('show.bs.offcanvas', function () {
+        iconEl.className = 'fa-solid fa-xmark';
+      });
+
+      sidebarEl.addEventListener('hide.bs.offcanvas', function () {
+        iconEl.className = 'fa-solid fa-bars';
+      });
 
       const urlParams = new URLSearchParams(window.location.search);
       const guestName = urlParams.get('to');
@@ -475,7 +650,6 @@
         document.getElementById('coverView').classList.remove('d-none');
         document.getElementById('guestView').classList.add('d-none');
         document.getElementById('adminView').classList.add('d-none');
-        document.getElementById('toggleViewBtn').innerHTML = `<i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin`;
       } else if (mode === 'admin' || !guestName) {
         showAdminView();
       }
@@ -487,21 +661,20 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function toggleView() {
-      const adminView = document.getElementById('adminView');
-      if (adminView.classList.contains('d-none')) {
+    function switchViewFromSidebar(targetView) {
+      if (targetView === 'admin') {
         showAdminView();
       } else {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('to')) {
-          document.getElementById('coverView').classList.remove('d-none');
-          document.getElementById('adminView').classList.add('d-none');
-          document.getElementById('guestView').classList.add('d-none');
-        } else {
-          document.getElementById('guestView').classList.remove('d-none');
-          document.getElementById('adminView').classList.add('d-none');
-        }
-        document.getElementById('toggleViewBtn').innerHTML = `<i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin`;
+        showGuestView();
+      }
+      closeSidebar();
+    }
+
+    function closeSidebar() {
+      const sidebarEl = document.getElementById('leftSidebarNav');
+      const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarEl);
+      if (bsOffcanvas) {
+        bsOffcanvas.hide();
       }
     }
 
@@ -509,31 +682,83 @@
       document.getElementById('coverView').classList.add('d-none');
       document.getElementById('guestView').classList.add('d-none');
       document.getElementById('adminView').classList.remove('d-none');
-      document.getElementById('toggleViewBtn').innerHTML = `<i class="fa-solid fa-envelope me-2"></i> Lihat Undangan`;
+      
+      document.getElementById('menuItemAdmin').classList.add('active');
+      document.getElementById('menuItemGuest').classList.remove('active');
+
       renderDashboard();
     }
 
+    function showGuestView() {
+      document.getElementById('coverView').classList.add('d-none');
+      document.getElementById('adminView').classList.add('d-none');
+      document.getElementById('guestView').classList.remove('d-none');
+
+      document.getElementById('menuItemGuest').classList.add('active');
+      document.getElementById('menuItemAdmin').classList.remove('active');
+    }
+
+    // KONTROL FILTER RSVP KEHADIRAN
+    function setRsvpFilter(status) {
+      currentRsvpFilter = status;
+      currentPage = 1;
+
+      // Update Tampilan Tombol Filter
+      document.getElementById('btnFilterAll').classList.toggle('active', status === 'all');
+      document.getElementById('btnFilterHadir').classList.toggle('active', status === 'Hadir');
+      document.getElementById('btnFilterTidakHadir').classList.toggle('active', status === 'Tidak Hadir');
+      document.getElementById('btnFilterBelum').classList.toggle('active', status === 'Belum Respon');
+
+      renderDashboard();
+    }
+
+    function applyRsvpFilterFromSidebar(status) {
+      showAdminView();
+      setRsvpFilter(status);
+      closeSidebar();
+    }
+
     function renderDashboard() {
-      // 1. STATISTIK KESELURUHAN
+      // 1. HITUNG STATISTIK KESELURUHAN & BADGES
       let total = guests.length;
       let terkirimCount = guests.filter(g => g.terkirim).length;
       let belumKirimCount = total - terkirimCount;
       let hadirCount = guests.filter(g => g.rsvp === 'Hadir').length;
+      let tdkHadirCount = guests.filter(g => g.rsvp === 'Tidak Hadir').length;
+      let belumResponCount = guests.filter(g => g.rsvp === 'Belum Respon' || !g.rsvp).length;
 
       document.getElementById('statTotal').innerText = total;
       document.getElementById('statTerkirim').innerText = `${terkirimCount} (${total ? Math.round((terkirimCount/total)*100) : 0}%)`;
       document.getElementById('statBelumKirim').innerText = belumKirimCount;
       document.getElementById('statHadir').innerText = hadirCount;
 
-      // 2. FILTERING PENCARIAN
+      // Update Sidebar Badges
+      document.getElementById('sbBadgeAll').innerText = total;
+      document.getElementById('sbBadgeHadir').innerText = hadirCount;
+      document.getElementById('sbBadgeTidakHadir').innerText = tdkHadirCount;
+      document.getElementById('sbBadgeBelum').innerText = belumResponCount;
+
+      // 2. FILTERING DATA BERDASARKAN KONTROL RSVP & PENCARIAN
       const searchBox = document.getElementById('searchBox');
       const q = searchBox ? searchBox.value.toLowerCase().trim() : '';
+
       const filtered = guests.filter(g => {
         const text = `${g.nama} ${g.jabatan || ''} ${g.wa || ''}`.toLowerCase();
-        return text.includes(q);
+        const matchSearch = text.includes(q);
+
+        let matchRsvp = true;
+        if (currentRsvpFilter === 'Hadir') {
+          matchRsvp = g.rsvp === 'Hadir';
+        } else if (currentRsvpFilter === 'Tidak Hadir') {
+          matchRsvp = g.rsvp === 'Tidak Hadir';
+        } else if (currentRsvpFilter === 'Belum Respon') {
+          matchRsvp = g.rsvp === 'Belum Respon' || !g.rsvp;
+        }
+
+        return matchSearch && matchRsvp;
       });
 
-      // 3. PAGINATION CALCULATION
+      // 3. LOGIKA PAGINATION
       const totalFiltered = filtered.length;
       const totalPages = Math.ceil(totalFiltered / rowsPerPage) || 1;
       
@@ -544,12 +769,12 @@
       const endIndex = Math.min(startIndex + rowsPerPage, totalFiltered);
       const pageGuests = filtered.slice(startIndex, endIndex);
 
-      // 4. RENDER TABEL
+      // 4. RENDER DOKUMEN TABEL
       const tbody = document.getElementById('guestTableBody');
       tbody.innerHTML = '';
 
       if (pageGuests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox display-6 d-block mb-2"></i>Tidak ada data tamu.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox display-6 d-block mb-2"></i>Tidak ada data tamu yang sesuai filter.</td></tr>`;
       } else {
         const baseUrl = window.location.origin + window.location.pathname;
 
@@ -596,7 +821,7 @@
         });
       }
 
-      // 5. RENDER KONTROL PAGINATION
+      // 5. RENDER NAVIGASI PAGINATION
       renderPaginationControls(totalFiltered, totalPages, startIndex, endIndex);
     }
 
@@ -614,21 +839,18 @@
 
       let navHtml = '';
 
-      // Tombol Previous
       navHtml += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
         <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>`;
 
-      // Angka Halaman
       for (let i = 1; i <= totalPages; i++) {
         navHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
           <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
         </li>`;
       }
 
-      // Tombol Next
       navHtml += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
         <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
@@ -815,11 +1037,10 @@
         csv += `"${g.nama}","${g.jabatan}","${g.wa}","${g.terkirim ? 'Sudah' : 'Belum'}","${g.rsvp}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Laporan_Undangan_Kembaranas_III.csv';
-      a.click();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = 'Laporan_Undangan_Kembaranas_III.csv';
+      link.click();
     }
 
     function escapeHtml(text) {
