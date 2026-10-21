@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Undangan Digital Kembaranas III - Sako SIT</title>
-  
-  <!-- FAVICON WEBSITE -->
-  <link rel="icon" type="image/png" href="logo.png" onerror="this.href='https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh'">
+
+  <!-- FAVICON KONFIGURASI LENGKAP -->
+  <link id="appFavicon" rel="icon" type="image/png" sizes="32x32" href="logo.png">
+  <link rel="shortcut icon" type="image/x-icon" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -131,7 +133,7 @@
       padding: 10px 20px;
     }
 
-    /* 3. DASHBOARD ADMIN & HEADER LOGO */
+    /* 3. DASHBOARD ADMIN */
     .admin-header {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: #fff;
@@ -178,16 +180,15 @@
 </head>
 <body>
 
-  <!-- TOMBOL MODES (ADMIN / TAMU) -->
+  <!-- TOMBOL MODES -->
   <button id="toggleViewBtn" class="btn btn-dark nav-toggle-btn" onclick="toggleView()">
     <i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin
   </button>
 
-  <!-- ==================== 1. HALAMAN COVER UNDANGAN ==================== -->
+  <!-- ==================== 1. COVER UNDANGAN ==================== -->
   <div id="coverView">
     <div class="cover-card">
-      <!-- Logo Aplikasi Web pada Cover -->
-      <img src="logo.png" alt="Logo Kembaranas III" class="cover-logo" onerror="this.src='https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh'">
+      <img src="logo.png" id="logoCover" alt="Logo Kembaranas III" class="cover-logo" onerror="handleLogoError(this)">
       <h6 class="text-uppercase tracking-wider text-warning mb-2" style="letter-spacing: 2px;">Undangan Resmi</h6>
       <h4 class="fw-bold mb-3">KEMBARANAS III & PPIM PENEGAK SIT</h4>
       <p class="text-white-50 mb-4" style="font-size: 0.9rem;">Satuan Komunitas Pramuka Sekolah Islam Terpadu</p>
@@ -210,14 +211,12 @@
       <div class="card-wrapper">
         <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img" onerror="this.src='https://lh3.googleusercontent.com/d/1Zl9CQud2PZgA1z6sSEG6x6CoEUwM03R1'">
         
-        <!-- Overlay Nama & Jabatan Tamu -->
         <div class="nama-overlay">
           <div class="nama-text" id="displayNamaTamu">Kak Feri Susanto, S.Kom</div>
           <div class="jabatan-text" id="displayJabatanTamu">Panitia Kembaranas III</div>
         </div>
       </div>
 
-      <!-- Konfirmasi Kehadiran (RSVP) -->
       <div class="rsvp-section">
         <h5 class="mb-3 text-secondary"><i class="fa-solid fa-clipboard-check me-2"></i>Konfirmasi Kehadiran</h5>
         <div id="rsvpButtons">
@@ -233,14 +232,13 @@
     </div>
   </div>
 
-  <!-- ==================== 3. DASHBOARD ADMIN & LAPORAN ==================== -->
+  <!-- ==================== 3. DASHBOARD ADMIN ==================== -->
   <div id="adminView" class="d-none">
     <header class="admin-header mb-4">
       <div class="container">
         <div class="d-flex justify-content-between align-items-center flex-wrap">
           <div class="d-flex align-items-center">
-            <!-- Logo Aplikasi Web pada Dashboard Admin Header -->
-            <img src="logo.png" alt="Logo Kembaranas III" class="admin-logo" onerror="this.src='https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh'">
+            <img src="logo.png" id="logoAdmin" alt="Logo Kembaranas III" class="admin-logo" onerror="handleLogoError(this)">
             <div>
               <h4 class="fw-bold mb-0">Dashboard Undangan Kembaranas III</h4>
               <p class="mb-0 text-white-50 small">Satuan Komunitas Pramuka Sekolah Islam Terpadu (Sako SIT)</p>
@@ -255,7 +253,7 @@
     </header>
 
     <div class="container mb-5">
-      <!-- METER STATISTIK LAPORAN -->
+      <!-- STATISTIK LAPORAN -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
           <div class="card stat-card bg-white p-3 border-start border-primary border-4">
@@ -306,7 +304,7 @@
         </div>
       </div>
 
-      <!-- TABEL DAFTAR UNDANGAN & KONTROL -->
+      <!-- TABEL DAFTAR UNDANGAN -->
       <div class="table-responsive">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
           <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2"></i>Daftar Undangan & Status</h5>
@@ -353,7 +351,27 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bootstrap.bundle.min.js"></script>
   <script>
-    // DATA SAMPLE TAMU
+    // URL CDN DRIVE LOGO 2 UNTUK FALLBACK DYNAMIC FAVICON
+    const fallbackLogoUrl = 'https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh=s256';
+
+    function setupFavicon() {
+      const favEl = document.getElementById('appFavicon');
+      // Uji apakah logo.png atau 2.png ada di github
+      const img = new Image();
+      img.src = 'logo.png';
+      img.onload = function() {
+        favEl.href = 'logo.png';
+      };
+      img.onerror = function() {
+        // Jika file lokal belum diupload, gunakan CDN Google Direct Link
+        favEl.href = fallbackLogoUrl;
+      };
+    }
+
+    function handleLogoError(img) {
+      img.src = fallbackLogoUrl;
+    }
+
     const defaultGuests = [
       { id: 1, nama: "Kak Feri Susanto, S.Kom", jabatan: "Panitia Kembaranas III", wa: "6281234567890", terkirim: true, rsvp: "Hadir" },
       { id: 2, nama: "Bapak Ka. Kwarda Lampung", jabatan: "Kwarda Lampung", wa: "6281987654321", terkirim: false, rsvp: "Belum Respon" },
@@ -368,6 +386,8 @@
     }
 
     function initView() {
+      setupFavicon();
+
       const urlParams = new URLSearchParams(window.location.search);
       const guestName = urlParams.get('to');
       const guestJabatan = urlParams.get('j') || urlParams.get('jabatan') || "";
