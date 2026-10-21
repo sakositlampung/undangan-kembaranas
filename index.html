@@ -19,7 +19,7 @@
   <meta property="og:image" content="https://sakositlampung.github.io/undangan-kembaranas/logo.png">
   <meta property="og:image:secure_url" content="https://sakositlampung.github.io/undangan-kembaranas/logo.png">
   
-  <!-- Backup OG Image (Direct Google Drive CDN) jika logo.png di Repo belum terbaca -->
+  <!-- Backup OG Image (Direct Google Drive CDN) -->
   <meta property="og:image" content="https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh">
   <meta property="og:image:secure_url" content="https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh">
   
@@ -27,13 +27,18 @@
   <meta property="og:image:width" content="400">
   <meta property="og:image:height" content="400">
 
-  <!-- FAVICON KONFIGURASI LENGKAP -->
+  <!-- FAVICON KONFIGURASI -->
   <link id="appFavicon" rel="icon" type="image/png" sizes="32x32" href="logo.png">
   <link rel="shortcut icon" type="image/png" href="https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1nJu5ER7lWJtRUCFPBUD1KDBGdfdCnpFh">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- LIBRARY EXTERNAL: html2pdf.js (Unduh PDF) & SheetJS (Export Excel) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <style>
     :root {
       --primary-color: #5c1813;
@@ -117,7 +122,6 @@
       display: block;
     }
 
-    /* Overlay Nama & Jabatan Presisi pada Kotak Putih Template */
     .nama-overlay {
       position: absolute;
       top: 41%;
@@ -150,10 +154,27 @@
     }
 
     .btn-rsvp {
-      min-width: 140px;
+      min-width: 130px;
       font-weight: 600;
       border-radius: 30px;
-      padding: 10px 20px;
+      padding: 10px 18px;
+    }
+
+    .btn-download-pdf {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: #fff;
+      font-weight: 600;
+      border-radius: 30px;
+      padding: 10px 22px;
+      border: none;
+      box-shadow: 0 4px 12px rgba(92, 24, 19, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-download-pdf:hover {
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+      color: #fff;
+      transform: translateY(-2px);
     }
 
     /* 3. DASHBOARD ADMIN */
@@ -203,7 +224,7 @@
 </head>
 <body>
 
-  <!-- TOMBOL MODES (ADMIN / UNDANGAN) -->
+  <!-- TOMBOL MODES -->
   <button id="toggleViewBtn" class="btn btn-dark nav-toggle-btn" onclick="toggleView()">
     <i class="fa-solid fa-gauge-high me-2"></i> Dashboard Admin
   </button>
@@ -231,7 +252,7 @@
   <!-- ==================== 2. TAMPILAN UNDANGAN UTAMA ==================== -->
   <div id="guestView" class="container py-3 d-none">
     <div class="guest-container">
-      <div class="card-wrapper">
+      <div class="card-wrapper" id="invitationCardArea">
         <img src="Undangan.png" alt="Undangan Kembaranas III" class="undangan-img" onerror="this.src='https://lh3.googleusercontent.com/d/1Zl9CQud2PZgA1z6sSEG6x6CoEUwM03R1'">
         
         <div class="nama-overlay">
@@ -240,15 +261,19 @@
         </div>
       </div>
 
-      <!-- Konfirmasi Kehadiran (RSVP) -->
+      <!-- Konfirmasi Kehadiran (RSVP) & Unduh PDF -->
       <div class="rsvp-section">
         <h5 class="mb-3 text-secondary"><i class="fa-solid fa-clipboard-check me-2"></i>Konfirmasi Kehadiran</h5>
-        <div id="rsvpButtons">
+        <div id="rsvpButtons" class="mb-3">
           <button class="btn btn-success btn-rsvp me-2 mb-2" onclick="submitRSVP('Hadir')">
             <i class="fa-solid fa-circle-check me-1"></i> Saya Hadir
           </button>
-          <button class="btn btn-outline-danger btn-rsvp mb-2" onclick="submitRSVP('Tidak Hadir')">
-            <i class="fa-solid fa-circle-xmark me-1"></i> Halangan / Tidak Hadir
+          <button class="btn btn-outline-danger btn-rsvp me-2 mb-2" onclick="submitRSVP('Tidak Hadir')">
+            <i class="fa-solid fa-circle-xmark me-1"></i> Halangan
+          </button>
+          <!-- FITUR 1: UNDUH UNDANGAN DALAM BENTUK PDF -->
+          <button class="btn btn-download-pdf mb-2" onclick="downloadPDF()">
+            <i class="fa-solid fa-file-pdf me-2"></i> Unduh Undangan PDF
           </button>
         </div>
         <div id="rsvpAlert" class="alert alert-info mt-3 d-none" role="alert"></div>
@@ -268,9 +293,11 @@
               <p class="mb-0 text-white-50 small">Satuan Komunitas Pramuka Sekolah Islam Terpadu (Sako SIT)</p>
             </div>
           </div>
-          <div class="mt-2 mt-md-0">
-            <button class="btn btn-light btn-sm me-2" onclick="copyWALaporan()"><i class="fa-solid fa-copy me-1"></i> Salin Laporan WA</button>
-            <button class="btn btn-warning btn-sm" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
+          <div class="mt-2 mt-md-0 d-flex gap-2 flex-wrap">
+            <button class="btn btn-light btn-sm" onclick="copyWALaporan()"><i class="fa-solid fa-copy me-1"></i> Salin Laporan WA</button>
+            <button class="btn btn-outline-light btn-sm" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
+            <!-- FITUR 2: EXPORT EXCEL UNDANGAN & PESAN WA -->
+            <button class="btn btn-warning btn-sm text-dark fw-bold" onclick="exportExcel()"><i class="fa-solid fa-file-excel me-1"></i> Export Excel (.xlsx)</button>
           </div>
         </div>
       </div>
@@ -613,6 +640,68 @@
         alertBox.className = "alert alert-warning mt-3";
         alertBox.innerHTML = "<i class='fa-solid fa-circle-info me-2'></i>Terima kasih atas konfirmasinya. Mohon doa agar acara berjalan lancar.";
       }
+    }
+
+    /* FITUR 1: UNDUH UNDANGAN DALAM BENTUK PDF */
+    function downloadPDF() {
+      const cardArea = document.getElementById('invitationCardArea');
+      const nama = document.getElementById('displayNamaTamu').innerText || 'Tamu';
+      const cleanName = nama.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `Undangan_Kembaranas_III_${cleanName}.pdf`;
+
+      showPopNotification("Mengunduh PDF... 📄", "Berkas PDF undangan Anda sedang diproses. Pengunduhan akan berjalan secara otomatis dalam beberapa detik.");
+
+      const opt = {
+        margin:       0,
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(cardArea).save();
+    }
+
+    /* FITUR 2: EXPORT ALL LINK & PESAN WA KE EXCEL (.XLSX) */
+    function exportExcel() {
+      const baseUrl = window.location.origin + window.location.pathname;
+
+      const excelData = guests.map((g, index) => {
+        const inviteLink = `${baseUrl}?to=${encodeURIComponent(g.nama)}${g.jabatan ? '&j=' + encodeURIComponent(g.jabatan) : ''}`;
+        const waText = `Assalamu'alaikum Wr. Wb. Kak/Bpk/Ibu *${g.nama}*,\n\nKami mengundang Anda untuk hadir pada acara *PEMBUKAAN KEMBARANAS III DAN PPIM PENEGAK TINGKAT NASIONAL* SAKO PRAMUKA SIT.\n\nDetail Undangan Digital Anda dapat diakses melalui tautan berikut:\n${inviteLink}\n\nTerima kasih.`;
+
+        return {
+          "No": index + 1,
+          "Nama Penerima": g.nama,
+          "Jabatan / Utusan": g.jabatan || "-",
+          "No WhatsApp": g.wa || "-",
+          "Link Undangan Online": inviteLink,
+          "Pesan WhatsApp": waText,
+          "Status Kirim": g.terkirim ? "Sudah Terkirim" : "Belum Terkirim",
+          "Konfirmasi Kehadiran (RSVP)": g.rsvp
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Mengatur lebar kolom agar rapi di Excel
+      worksheet['!cols'] = [
+        { wch: 5 },   // No
+        { wch: 30 },  // Nama
+        { wch: 25 },  // Jabatan
+        { wch: 18 },  // No WA
+        { wch: 65 },  // Link Undangan
+        { wch: 75 },  // Pesan WA
+        { wch: 15 },  // Status Kirim
+        { wch: 20 }   // RSVP
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data Undangan");
+
+      XLSX.writeFile(workbook, "Data_Link_Pesan_Undangan_Kembaranas_III.xlsx");
+
+      showPopNotification("Export Excel Berhasil! 📊", "Berkas Excel (.xlsx) berisi seluruh daftar tamu, link kustom, dan pesan WhatsApp berhasil diunduh.");
     }
 
     function exportCSV() {
