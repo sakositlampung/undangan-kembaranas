@@ -689,6 +689,56 @@
     </div>
   </div>
 
+  <!-- MODAL EDIT DATA TAMU -->
+  <div class="modal fade" id="editGuestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 18px;">
+        <div class="modal-header bg-warning text-dark" style="border-top-left-radius: 18px; border-top-right-radius: 18px;">
+          <h5 class="modal-title fw-bold fs-6"><i class="fa-solid fa-pen-to-square me-2"></i>Edit Data Penerima Undangan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="editGuestForm" onsubmit="updateGuest(event)">
+            <input type="hidden" id="editGuestId">
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-secondary">Nama Lengkap Penerima</label>
+              <input type="text" class="form-control" id="editNama" required placeholder="Contoh: Kak Feri Susanto, S.Kom">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-secondary">Jabatan / Utusan</label>
+              <input type="text" class="form-control" id="editJabatan" placeholder="Contoh: Panitia Kembaranas III">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-secondary">No WhatsApp</label>
+              <input type="text" class="form-control" id="editWA" placeholder="Contoh: 6281234567890">
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold small text-secondary">Status Pengiriman</label>
+                <select class="form-select form-select-sm" id="editTerkirim">
+                  <option value="false">Belum Terkirim</option>
+                  <option value="true">Sudah Terkirim</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold small text-secondary">Status RSVP</label>
+                <select class="form-select form-select-sm" id="editRSVP">
+                  <option value="Belum Respon">Belum Respon</option>
+                  <option value="Hadir">Hadir</option>
+                  <option value="Tidak Hadir">Halangan</option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <button type="button" class="btn btn-light btn-sm rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- POP-UP MODAL NOTIFIKASI POSITIF -->
   <div class="modal fade" id="popNotificationModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -803,6 +853,52 @@
         }
       };
       reader.readAsArrayBuffer(file);
+    }
+
+    /* KONTROL EDIT DATA TAMU DENGAN MODAL */
+    function editGuest(id) {
+      const g = guests.find(x => x.id === id);
+      if (g) {
+        document.getElementById('editGuestId').value = g.id;
+        document.getElementById('editNama').value = g.nama;
+        document.getElementById('editJabatan').value = g.jabatan || '';
+        document.getElementById('editWA').value = g.wa || '';
+        document.getElementById('editTerkirim').value = g.terkirim ? 'true' : 'false';
+        document.getElementById('editRSVP').value = g.rsvp || 'Belum Respon';
+
+        if (typeof bootstrap !== 'undefined') {
+          const modal = new bootstrap.Modal(document.getElementById('editGuestModal'));
+          modal.show();
+        }
+      }
+    }
+
+    function updateGuest(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('editGuestId').value);
+      const g = guests.find(x => x.id === id);
+
+      if (g) {
+        g.nama = document.getElementById('editNama').value.trim();
+        g.jabatan = document.getElementById('editJabatan').value.trim();
+        
+        let wa = document.getElementById('editWA').value.trim().replace(/[^0-9]/g, '');
+        if (wa.startsWith('0')) wa = '62' + wa.slice(1);
+        g.wa = wa;
+
+        g.terkirim = document.getElementById('editTerkirim').value === 'true';
+        g.rsvp = document.getElementById('editRSVP').value;
+
+        saveGuests();
+
+        const modalEl = document.getElementById('editGuestModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+
+        showPopNotification("Data Diperbarui! ✏️", "Perubahan data tamu berhasil disimpan.");
+      }
     }
 
     /* KONTROL PENCARIAN BISA DIMEKARAN/DICIUTKAN */
@@ -1015,6 +1111,9 @@
               </a>
               <button onclick="copyLink('${inviteLink}')" class="btn btn-sm btn-outline-primary me-1" title="Salin Link">
                 <i class="fa-solid fa-link"></i>
+              </button>
+              <button onclick="editGuest(${g.id})" class="btn btn-sm btn-outline-warning me-1" title="Edit Data Tamu">
+                <i class="fa-solid fa-pen-to-square"></i>
               </button>
               <button onclick="deleteGuest(${g.id})" class="btn btn-sm btn-outline-danger" title="Hapus">
                 <i class="fa-solid fa-trash"></i>
