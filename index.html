@@ -690,7 +690,7 @@
   </div>
 
   <!-- MODAL EDIT DATA TAMU -->
-  <div class="modal fade" id="editGuestModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="editGuestModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 18px;">
         <div class="modal-header bg-warning text-dark" style="border-top-left-radius: 18px; border-top-right-radius: 18px;">
@@ -855,28 +855,36 @@
       reader.readAsArrayBuffer(file);
     }
 
-    /* KONTROL EDIT DATA TAMU DENGAN MODAL */
+    /* KONTROL EDIT DATA TAMU DENGAN MODAL (FIXED LOGIC) */
     function editGuest(id) {
-      const g = guests.find(x => x.id === id);
+      const g = guests.find(x => x.id == id);
       if (g) {
         document.getElementById('editGuestId').value = g.id;
-        document.getElementById('editNama').value = g.nama;
+        document.getElementById('editNama').value = g.nama || '';
         document.getElementById('editJabatan').value = g.jabatan || '';
         document.getElementById('editWA').value = g.wa || '';
         document.getElementById('editTerkirim').value = g.terkirim ? 'true' : 'false';
         document.getElementById('editRSVP').value = g.rsvp || 'Belum Respon';
 
-        if (typeof bootstrap !== 'undefined') {
-          const modal = new bootstrap.Modal(document.getElementById('editGuestModal'));
+        const modalEl = document.getElementById('editGuestModal');
+        if (window.bootstrap && bootstrap.Modal) {
+          let modal = bootstrap.Modal.getInstance(modalEl);
+          if (!modal) {
+            modal = new bootstrap.Modal(modalEl);
+          }
           modal.show();
+        } else {
+          alert("Sistem modal Bootstrap belum dimuat sempurna.");
         }
+      } else {
+        alert("Data tamu tidak ditemukan.");
       }
     }
 
     function updateGuest(e) {
       e.preventDefault();
-      const id = parseInt(document.getElementById('editGuestId').value);
-      const g = guests.find(x => x.id === id);
+      const id = document.getElementById('editGuestId').value;
+      const g = guests.find(x => x.id == id);
 
       if (g) {
         g.nama = document.getElementById('editNama').value.trim();
@@ -892,9 +900,11 @@
         saveGuests();
 
         const modalEl = document.getElementById('editGuestModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) {
-          modalInstance.hide();
+        if (window.bootstrap && bootstrap.Modal) {
+          const modalInstance = bootstrap.Modal.getInstance(modalEl);
+          if (modalInstance) {
+            modalInstance.hide();
+          }
         }
 
         showPopNotification("Data Diperbarui! ✏️", "Perubahan data tamu berhasil disimpan.");
@@ -1106,16 +1116,16 @@
               <a href="${inviteLink}" target="_blank" class="btn btn-sm btn-outline-info me-1" title="Pratinjau Undangan">
                 <i class="fa-solid fa-eye"></i>
               </a>
-              <a href="${waLink}" target="_blank" onclick="markAsSent(${g.id})" class="btn btn-sm btn-success me-1" title="Kirim WA">
+              <a href="${waLink}" target="_blank" onclick="markAsSent('${g.id}')" class="btn btn-sm btn-success me-1" title="Kirim WA">
                 <i class="fa-brands fa-whatsapp"></i>
               </a>
               <button onclick="copyLink('${inviteLink}')" class="btn btn-sm btn-outline-primary me-1" title="Salin Link">
                 <i class="fa-solid fa-link"></i>
               </button>
-              <button onclick="editGuest(${g.id})" class="btn btn-sm btn-outline-warning me-1" title="Edit Data Tamu">
+              <button onclick="editGuest('${g.id}')" class="btn btn-sm btn-outline-warning me-1" title="Edit Data Tamu">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteGuest(${g.id})" class="btn btn-sm btn-outline-danger" title="Hapus">
+              <button onclick="deleteGuest('${g.id}')" class="btn btn-sm btn-outline-danger" title="Hapus">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -1202,7 +1212,7 @@
     }
 
     function markAsSent(id) {
-      const g = guests.find(x => x.id === id);
+      const g = guests.find(x => x.id == id);
       if (g) {
         g.terkirim = true;
         saveGuests();
@@ -1211,7 +1221,7 @@
 
     function deleteGuest(id) {
       if (confirm("Apakah Anda yakin ingin menghapus nama tamu ini?")) {
-        guests = guests.filter(x => x.id !== id);
+        guests = guests.filter(x => x.id != id);
         saveGuests();
       }
     }
@@ -1248,7 +1258,11 @@
       document.getElementById('popTitle').innerText = title;
       document.getElementById('popMessage').innerText = message;
       if (typeof bootstrap !== 'undefined') {
-        const modal = new bootstrap.Modal(document.getElementById('popNotificationModal'));
+        const modalEl = document.getElementById('popNotificationModal');
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (!modal) {
+          modal = new bootstrap.Modal(modalEl);
+        }
         modal.show();
       }
     }
