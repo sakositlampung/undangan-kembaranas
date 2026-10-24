@@ -410,6 +410,9 @@
 </head>
 <body>
 
+  <!-- INPUT FILE TERSEMBUNYI UNTUK IMPOR EXCEL -->
+  <input type="file" id="importExcelInput" accept=".xlsx, .xls" onchange="importExcel(event)" style="display: none;">
+
   <!-- OVERLAY BACKGROUND GELAP UNTUK SIDEBAR -->
   <div class="custom-sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
 
@@ -451,8 +454,11 @@
         <i class="fa-solid fa-clock text-warning"></i> Belum Konfirmasi <span class="badge bg-warning text-dark ms-auto" id="sbBadgeBelum">0</span>
       </a>
 
-      <!-- EKSPOR & AKSI CEPAT -->
-      <div class="sidebar-section-title">Aksi & Ekspor Data</div>
+      <!-- IMPOR & EKSPOR & AKSI CEPAT -->
+      <div class="sidebar-section-title">Aksi & Impor/Ekspor Data</div>
+      <a class="sidebar-nav-item" onclick="triggerImportExcel(); toggleSidebar(false);">
+        <i class="fa-solid fa-file-import text-warning"></i> Impor Excel (.xlsx)
+      </a>
       <a class="sidebar-nav-item" onclick="exportExcel(); toggleSidebar(false);">
         <i class="fa-solid fa-file-excel text-success"></i> Ekspor Excel (.xlsx)
       </a>
@@ -542,6 +548,7 @@
           <div class="d-flex gap-2 flex-wrap">
             <button class="btn btn-light btn-sm" onclick="copyWALaporan()"><i class="fa-solid fa-copy me-1"></i> Salin Laporan WA</button>
             <button class="btn btn-outline-light btn-sm" onclick="exportCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
+            <button class="btn btn-info btn-sm text-dark fw-bold" onclick="triggerImportExcel()"><i class="fa-solid fa-file-import me-1"></i> Import Excel (.xlsx)</button>
             <button class="btn btn-warning btn-sm text-dark fw-bold" onclick="exportExcel()"><i class="fa-solid fa-file-excel me-1"></i> Export Excel (.xlsx)</button>
           </div>
         </div>
@@ -599,8 +606,9 @@
 
       <!-- FORM TAMBAH TAMU -->
       <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-header bg-white fw-bold py-3">
-          <i class="fa-solid fa-user-plus me-2 text-danger"></i>Tambah Penerima Undangan Baru
+        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+          <div><i class="fa-solid fa-user-plus me-2 text-danger"></i>Tambah Penerima Undangan Baru</div>
+          <button class="btn btn-sm btn-outline-success" onclick="triggerImportExcel()"><i class="fa-solid fa-file-import me-1"></i> Impor dari Excel</button>
         </div>
         <div class="card-body">
           <form id="addGuestForm" class="row g-3" onsubmit="addGuest(event)">
@@ -731,6 +739,70 @@
     function saveGuests() {
       localStorage.setItem("kembaranas_guests", JSON.stringify(guests));
       renderDashboard();
+    }
+
+    /* FUNGSI KONTROL IMPOR DARI TEMPLATE EXCEL */
+    function triggerImportExcel() {
+      document.getElementById('importExcelInput').click();
+    }
+
+    function importExcel(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const json = XLSX.utils.sheet_to_json(worksheet);
+
+          if (!json || json.length === 0) {
+            alert("Berkas Excel kosong atau format tidak sesuai.");
+            return;
+          }
+
+          let importedCount = 0;
+          json.forEach(row => {
+            const nama = row["Nama Penerima"] || row["Nama"] || row["nama"] || row["NAMA"];
+            if (nama) {
+              const jabatan = row["Jabatan / Utusan"] || row["Jabatan"] || row["jabatan"] || row["JABATAN"] || "";
+              let wa = String(row["No WhatsApp"] || row["No WA"] || row["WhatsApp"] || row["WA"] || row["wa"] || "").replace(/[^0-9]/g, '');
+              if (wa.startsWith('0')) wa = '62' + wa.slice(1);
+
+              const statusKirim = String(row["Status Kirim"] || "").toLowerCase();
+              const terkirim = statusKirim.includes("sudah") || statusKirim.includes("terkirim") || row["terkirim"] === true;
+
+              const rsvpVal = row["Konfirmasi Kehadiran (RSVP)"] || row["RSVP"] || row["rsvp"] || "Belum Respon";
+
+              guests.push({
+                id: Date.now() + Math.floor(Math.random() * 10000),
+                nama: String(nama).trim(),
+                jabatan: String(jabatan).trim(),
+                wa: wa,
+                terkirim: Boolean(terkirim),
+                rsvp: rsvpVal
+              });
+              importedCount++;
+            }
+          });
+
+          if (importedCount > 0) {
+            saveGuests();
+            showPopNotification("Impor Data Berhasil! 🎉", `Berhasil memasukkan ${importedCount} data tamu baru dari berkas Excel.`);
+          } else {
+            alert("Tidak ditemukan data nama tamu yang valid dalam berkas Excel.");
+          }
+        } catch (err) {
+          console.error("Import Excel Error:", err);
+          alert("Gagal membaca berkas Excel. Pastikan file dalam format .xlsx atau .xls yang valid.");
+        } finally {
+          e.target.value = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     /* KONTROL PENCARIAN BISA DIMEKARAN/DICIUTKAN */
